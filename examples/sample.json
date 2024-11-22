@@ -1,0 +1,112 @@
+{
+    "version" : 1.0,
+    "project" : "verjioCloud",
+        
+    "dependencies" :
+    [
+        {
+            "name" : "MinVerjIoServer",
+            "description" : "The minimised version of the verjio server. May be used by all internal servers that require a verj.io server.",
+            "target_dir" : "/ebase/api_server",
+            "target_name" : "VerjioServer.tar.gz",
+            "source" : "verjio_5.13_min"
+        },
+        {
+            "name" : "FullVerjIoServer",
+            "description" : "The full version of the verjio server. Used by some customer-facing server that use a verj.io server. Contains things like reference documentation.",
+            "target_dir" : "/ebase/full_server",
+            "target_name" : "VerjioServer.tar.gz",
+            "source" : "verjio_5.13_full"
+        },
+        {
+            "name" : "ControllerVerjIoServer",
+            "description" : "The minimised version of the verjio server for use by the controller container (docker mandates that it must be part of the image filesystem).",
+            "target_dir" : "/servicePlan/components/controller/verjioServer",
+            "target_name" : "VerjioServer.tar.gz",
+            "source" : "verjio_5.13_min"
+        },
+        {
+            "name" : "WebAppVerjIoServer",
+            "description" : "The minimised version of the verjio server for use by the webapp container (docker mandates that it must be part of the image filesystem).",
+            "target_dir" : "/servicePlan/components/controller/verjioServer",
+            "target_name" : "VerjioServer.tar.gz",
+            "source" : "verjio_5.13_min"
+        },
+
+        {
+            "name" : "Oracle18-4InitialDB",
+            "description" : "Oracle 18.4 container: A zip of the initial oracle database users get when they add oracle to their service plan. Its a huge size for something thats essentially an empty database.",
+            "target_dir" : "/servicePlan/components/oracle/filesystem/FS-18.4/hidden/databases/",
+            "source" : "verjio_cloud_serviceplan_components",
+            "source_path" : "oracle/18.4/initialDatabase/oracle.zip",
+            "resolve_action" : "unzip"
+        },
+        {
+            "name" : "Oracle18-4JDCBDriver",
+            "description" : "Oracle 18.4 container: The oracle jdbc driver that is added to the webapps when they select an oracle database. Licensing restrictions means that it can't be included by default.",
+            "target_dir" : "/servicePlan/components/oracle/filesystem/FS-18.4/hiddenFileStore/servicePlan/optionalJars/",
+            "source" : "verjio_cloud_serviceplan_components",
+            "source_path" : "oracle/jdbc/8/ojdbc8.jar"
+        },
+        {
+            "name" : "Oracle18-4rpm",
+            "description" : "Oracle 18.4 container: The oracle 18.4 'express' rpm",
+            "target_dir" : "/servicePlan/components/oracle/image/18.4/files",
+            "source" : "verjio_cloud_serviceplan_components",
+            "source_path" : "oracle/18.4/oracle-database-xe-18c-1.0-1.x86_64.rpm"
+        }
+    ],
+
+    "sources" :
+    [
+        {
+            "name" : "internal",
+            "protocol" : "filesystem",
+            "type" : "project"
+        },
+        {
+            "name" : "verjio_public",
+            "protocol" : "https",
+            "base" : "https://downloads.verj.io/verjio"
+        },
+        {
+            "name" : "verjio_5.13_full",
+            "protocol" : "https",
+            "base" : "https://downloads.verj.io/verjio/v5.13.3/server/lin/VerjioServer_5_13_3_linux64.tar.gz"
+        },
+        {
+            "name" : "verjio_5.13_min",
+            "protocol" : "https",
+            "base" : "https://downloads.verj.io/verjio/v5.13.3/server/lin/min/VerjioServer_5_13_3_linux64.tar.gz"
+        },
+        {
+            "name" : "verjio_cloud",
+            "protocol" : "https",
+            "base" : "https://downloads.verj.io/verjio/cloud"
+        },
+        {
+            "name" : "verjio_cloud_serviceplan_components",
+            "protocol" : "https",
+            "base" : "https://downloads.verj.io/verjio/cloud/servicePlan/components"
+        }
+    ],
+
+    "source_protocol" :
+    [
+        "filesystem",
+        "https"
+    ],
+
+    "source_type" :
+    [
+        "absolute",
+        "project"
+    ],
+
+    "resolve_action" :
+    [
+        "copy",
+        "unzip",
+        "untar"
+    ]
+}
