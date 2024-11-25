@@ -26,6 +26,7 @@ def _commandRunner() :
     _printConfig(subparsers)
     _validateConfig(subparsers)
     _updateSourceCache(subparsers)
+    _resolveFromCacheDependencies(subparsers)
     _resolveDependencies(subparsers)
     args = parser.parse_args()
     args.func(args)
@@ -81,15 +82,27 @@ def _updateSourceCacheCommand(args:Sequence[str]) :
 
 
 # Update every dependencies source in the cache.
-def _resolveDependencies(subparsers) :
+def _resolveFromCacheDependencies(subparsers) :
     runner = subparsers.add_parser("resolve_from_cache", help="Resolve all dependencies. Must have performed an update_cache to fetch the sources first.")
+    runner.add_argument("--configPath", "-c", help='The path to the configuration file', required=True)
+    runner.add_argument("--cacheRoot", "-R", help='The root of the cache to use for the downloads.', required=False)
+    runner.set_defaults(func=_resolveFromCacheDependenciesCommand)
+
+def _resolveFromCacheDependenciesCommand(args:Sequence[str]) :
+    _createProject(args).resolveFetchedDependencies()
+
+
+# Update every dependencies source in the cache.
+def _resolveDependencies(subparsers) :
+    runner = subparsers.add_parser("resolve", help="Fetch and Resolve all dependencies.")
+    runner.add_argument("--clean", action="store_true", help='Clean the cache and logs before downloading Sources. Essentially rebuilds the cache for the given configuration.')
+    runner.add_argument("--force", action="store_true", help='Always fetch of the source even if already previously fetched.')
     runner.add_argument("--configPath", "-c", help='The path to the configuration file', required=True)
     runner.add_argument("--cacheRoot", "-R", help='The root of the cache to use for the downloads.', required=False)
     runner.set_defaults(func=_resolveDependenciesCommand)
 
 def _resolveDependenciesCommand(args:Sequence[str]) :
-    _createProject(args).resolveDependencies()
-     
+    _createProject(args).resolveDependencies(alwaysFetch=args.force)
 
 
 # Cleans the log and cache

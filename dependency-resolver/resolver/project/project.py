@@ -48,15 +48,15 @@ class Project :
         for dependency in self._getDependencies().getDependencies() :
             count += 1
             if not self._hasBeenDownloaded(alreadyDownloaded, dependency) : 
-                print(f"{count} - Fetching dependency {dependency.getName()}...")
+                print(f"{count}-{dependency.getName()} : Fetching...")
                 try :
                     self._fetchDependency(dependency, alwaysFetch)
                     self._addDownloaded(alreadyDownloaded, dependency)
-                    print(f"{count} - Successfully fetched {dependency.getName()}.")
+                    print(f"{count}-{dependency.getName()} : Fetched.")
                 except FetchError as error:
-                    print(f"{count} - Failed to fetch {dependency.getName()}: {error}.")
+                    print(f"{count}-{dependency.getName()} : Failed :: {error}.")
             else :
-                print(f"{count} - Already fetched dependency {dependency.getName()}.")
+                print(f"{count}-{dependency.getName()} : Already fetched.")
         
         _logger.debug(f"...fetched dependencies.")
 
@@ -76,7 +76,7 @@ class Project :
         _logger.debug(f"...fetched dependency {dependency.getName()}.")
         
 
-    def resolveDependencies(self, onlyMissing:bool = False) :
+    def resolveFetchedDependencies(self, onlyMissing:bool = False) :
         """
         Resolve the dependencies by moving their fetched source to the target location.
 
@@ -89,12 +89,12 @@ class Project :
         count:int = 0
         for dependency in self._getDependencies().getDependencies() :
             count += 1
-            print(f"{count} - Resolving dependency {dependency.getName()}...")
+            print(f"{count}-{dependency.getName()} : Resolving...")
             try :
                 self._resolveDependency(dependency, onlyMissing)
-                print(f"{count} - Successfully resolved {dependency.getName()}.")
+                print(f"{count}-{dependency.getName()} : Resolved.")
             except ResolveError as error:
-                print(f"{count} - Failed to resolve {dependency.getName()}: {error}.")
+                print(f"{count}-{dependency.getName()} : Failed :: {error}.")
         
         _logger.debug(f"...resolved dependencies.")
 
@@ -112,6 +112,19 @@ class Project :
         _logger.debug(f"Resolving dependency {dependency.getName()} (only missing = {onlyMissing})")
         self._getCache().resolveDependency(dependency, self._getConfiguration().getConfigurationHome(), onlyMissing)
         _logger.debug(f"...resolved dependency {dependency.getName()}.")
+
+
+    def resolveDependencies(self, alwaysFetch:bool = False, onlyMissing:bool = False) :
+        """
+        Resolve all dependencies. Fetch any sources prior to resolving them.
+
+        Parameters:
+            onlyMissing - Only resolve those sources that are missing at the required direction. Note actions that are not file copies (e.g. unzipping) are always resolved.
+        """
+        _logger.debug(f"Fetching and resolving dependencies (force download = {alwaysFetch})")
+        self.fetchDependencies(alwaysFetch)
+        self.resolveFetchedDependencies(onlyMissing)
+        _logger.debug(f"...fetched and resolved dependencies.")
 
 
     # Uses the Creator to parse all the dependencies.
