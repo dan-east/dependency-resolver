@@ -1,3 +1,13 @@
+# General files
+# -------------
+
+# MacOS cache files
+.DS_Store
+
+
+# From GitHub python template
+# ---------------------------
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
