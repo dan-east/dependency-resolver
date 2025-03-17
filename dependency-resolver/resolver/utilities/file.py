@@ -7,8 +7,8 @@ from . import helpers, time
 
 _logger = logging.getLogger(__name__)
 
-# Create a directory (and parent structure if required) if it doesn't already exist
 def mkdir(dir:str, parents:bool = True, exist_ok:bool = True, mode:int = 511, user:str = None, group:str = None) :
+    """Create a directory (and parent structure if required) if it doesn't already exist."""
     if helpers.hasValue(dir) :
         Path(dir).mkdir(mode=mode, parents=parents, exist_ok=exist_ok)
         
@@ -18,37 +18,39 @@ def mkdir(dir:str, parents:bool = True, exist_ok:bool = True, mode:int = 511, us
         _logger.warning("Directory not specified - cannot create it.")
 
 
-# Does the specified path exist?
 def exists(path:str) -> bool :
+    """Does the specified path exist?"""
     return helpers.hasValue(path) and Path(path).exists()
 
 
-# Does the specified path exist and is it a directory.
 def isDir(path:str) -> bool :
+    """Does the specified path exist and is it a directory."""
     return os.path.isdir(path)
 
 
-# Does the specified path exist and it it a directory.
 def isFile(path:str) -> bool :
+    """Does the specified path exist and it it a directory."""
     return os.path.isfile(path)
 
 
-# Make sure the target path exists. Will exit if the path doesn't exist.
 def ensurePathExists(path:str) -> bool :
+    """Make sure the target path exists. Will exit if the path doesn't exist."""
     if helpers.isEmpty(path) or not exists(path) :
         _logger.error(f"{path} does not exist. Exiting.")
         exit(1)
     return True
 
 
-# Build up a path. Seperators are applied as appropriate.
-# Ignores any 'None' paths.
 def buildPath(*paths:str) -> str:
+    """
+    Build up a path. Separators are applied as appropriate.
+    Ignores any 'None' paths.
+    """
     result:str = None
     for path in paths :
         if path : 
             if result :
-                # Remove leading seperator from path, as a leading seperator causes the thing you are joining to (result in this case) to be discarded.
+                # Remove leading separator from path, as a leading separator causes the thing you are joining to (result in this case) to be discarded.
                 result = os.path.join(result, path.lstrip(os.path.sep)) 
             else :
                 result = f"{path}"
@@ -56,8 +58,8 @@ def buildPath(*paths:str) -> str:
     return result
 
 
-# Strip of the last part of the path, including any seperators
 def returnLastPartOfPath(fullpath:str) -> str :
+    """Strip of the last part of the path, including any separators."""
     return os.path.basename(os.path.normpath(fullpath))
 
 
@@ -67,11 +69,19 @@ def getParentDirectory(fullPath:str) -> str :
     """
     return os.path.dirname(fullPath)
 
-# Copy files or directories.
-#  sourceDirectotyContentsOnly can be used to only copy the contents of a source directory (has no effect is source is a file).
-#  Returns: the path to the newly copied file / destination directory. None indicates an error. 
-#  Raises exceptions with list of errors if the system copy fails.
+
+def getUserDirectory() -> str :
+    """Returns the user's directory"""
+    return Path.home().absolute()
+
+
 def copy(source:str, dest:str, sourceDirectoryContentsOnly:bool=False) -> str :
+    """
+    Copy files or directories.
+    sourceDirectoryContentsOnly can be used to only copy the contents of a source directory (has no effect is source is a file).
+    Returns: the path to the newly copied file / destination directory. None indicates an error. 
+    Raises exceptions with list of errors if the system copy fails."
+    """
     if Path(source).exists() :
         if Path(source).is_dir() :
             if sourceDirectoryContentsOnly :
@@ -86,9 +96,11 @@ def copy(source:str, dest:str, sourceDirectoryContentsOnly:bool=False) -> str :
         _logger.error(f"Can't copy - {source} does not exist")
 
 
-# Copy the contents of a directory to a destination
-# Returns the destination directory, if successful.
 def copyContents(dir:str, dest:str) -> str:
+    """
+    Copy the contents of a directory to a destination
+    Returns the destination directory, if successful."
+    """
     if os.path.exists(dest) and os.path.isdir(dest) :
         if os.path.exists(dir) and os.path.isdir(dir) :
             _logger.error("Copying contents of %s -> %s", dir, dest)
@@ -101,22 +113,28 @@ def copyContents(dir:str, dest:str) -> str:
         _logger.error("Cannot copy contents of %s to %s as the destination doesn't exist or is not a directory.", dir, dest)
 
 
-# Change the ownership of a file or directory (but not the contents of the directory).
-#  Parameters:
-#   path - a path, or Path-like object
-#   user - the user group (name, or uid)
-#   group - the group (name or group id)
 def chown(path:str, user:str=None, group:str=None) :
+    """
+    Change the ownership of a file or directory (but not the contents of the directory).
+
+    Parameters:
+        path - a path, or Path-like object
+        user - the user group (name, or uid)
+        group - the group (name or group id)
+    """
     _logger.debug("chown %s:%s %s", user, group, path)
     shutil.chown(path, user, group)
 
 
-# Change the ownership of a directory and its contents.
-#  Parameters:
-#   path - a path, or Path-like object
-#   user - the user group (name, or uid)
-#   group - the group (name or group id)
 def chown_recursive(path:str, user:str, group:str) :
+    """
+    Change the ownership of a directory and its contents.
+    
+    Parameters:
+        path - a path, or Path-like object
+        user - the user group (name, or uid)
+        group - the group (name or group id)
+    """
     _logger.debug("chown -R %s:%s %s...", user, group, path)
 
     # Change ownership for the top-level folder
@@ -134,20 +152,26 @@ def chown_recursive(path:str, user:str, group:str) :
     _logger.debug("...chowned %s", path)
 
 
-# Change the permissions of a file or directory (but not the contents of the directory).
-#  Parameters:
-#   path - a path, or Path-like object
-#   permissions - an octant (e.g. 0o750)
 def chmod(path:str, permissions:str) :
+    """
+    Change the permissions of a file or directory (but not the contents of the directory).
+        
+    Parameters:
+        path - a path, or Path-like object
+        permissions - an octant (e.g. 0o750)
+    """
     _logger.debug("chmod %s %s", permissions, path)
     os.chmod(path, permissions)
 
 
-# Change the permissions of a directory and its contents.
-#  Parameters:
-#   path - a path, or Path-like object
-#   permissions - an octant (e.g. 0o750)
 def chmod_recursive(path:str, permissions:str) :
+    """
+    Change the permissions of a directory and its contents.
+    
+    Parameters:
+        path - a path, or Path-like object
+        permissions - an octant (e.g. 0o750)
+   """
     _logger.debug("chmod -R %s %s...", permissions, path)
 
     # Change permissions for the top-level folder
@@ -165,9 +189,11 @@ def chmod_recursive(path:str, permissions:str) :
     _logger.debug("...chmodded %s", path)
 
 
-# Deletes the given target path.
-#   If the path points to a symbolic link then it is unlinked
 def delete(path:str) :
+    """
+    Deletes the given target path.
+    If the path points to a symbolic link then it is unlinked
+    """
     toDelete = Path(path)
     if toDelete.exists() :
         if toDelete.is_dir() and not toDelete.is_symlink() :
@@ -178,19 +204,19 @@ def delete(path:str) :
             _logger.debug("rm %s", toDelete.absolute())
             toDelete.unlink()
     else :
-        _logger.debug("Not deleting non-existant path %s", toDelete.absolute())
+        _logger.debug("Not deleting non-existent path %s", toDelete.absolute())
 
 
-# Deletes the contents of a directory (not the directory itself)
 def deleteContents(dir:str) :
+    """Deletes the contents of a directory (not the directory itself)."""
     toDelete = Path(dir)
     if toDelete.exists() :
         for name in os.listdir(dir):
             delete(os.path.join(dir, name))
 
 
-# empties the contents of a file.
 def emptyFileContents(filePath:str) :
+    """Empties the contents of a file."""
     if helpers.isEmpty(filePath) :
         _logger.error("Cannot empty contents of 'None' filePath")
     path = Path(filePath)
@@ -198,16 +224,19 @@ def emptyFileContents(filePath:str) :
         path.open("w").close()
 
 
-# Creates an empty file at the specifed path
 def createFile(filePath:str, mode:int = 438) :
+    """Creates an empty file at the specified path."""
     Path(filePath).touch(mode=mode, exist_ok=True)
 
 
-# Returns the path of the latest file in the specified directory or None if directory doesn't exist or is empty
-# Parameters:
-#   dir - the target directory
-#   filePattern - a pathname pattern, for example *.txt. Defaults to *.
 def findNewestFileInDirectory(dir:str, filePattern:str = "*") -> str:
+    """
+    Returns the path of the latest file in the specified directory or None if directory doesn't exist or is empty
+    
+    Parameters:
+        dir - the target directory
+        filePattern - a pathname pattern, for example *.txt. Defaults to *.
+    """
     newestFile:str = None
     if exists(dir) :
         list_of_files = glob.iglob(os.path.join(dir, filePattern))
@@ -215,8 +244,9 @@ def findNewestFileInDirectory(dir:str, filePattern:str = "*") -> str:
     return newestFile
 
 
-# How old is the given file.
+# 
 def howOldIsFile(path:str) -> time.timedelta :
+    """How old is the given file."""
     age:time.timedelta = None
     if path is not None and exists(path) :
         age = time.howOld(os.path.getmtime(path))
@@ -226,12 +256,15 @@ def howOldIsFile(path:str) -> time.timedelta :
     return age
 
 
-# Delete files (not directories) from a given directory that are older than the specified delta
-# Parameters
-#   dir - the directory to inspect
-#   delta - the maximum age of the file
-#   recursive - trues will find files in subdirectories
 def removeFiles(dir:str, delta:time.timedelta, recursive:bool = False) :
+    """
+    Delete files (not directories) from a given directory that are older than the specified delta
+
+    Parameters
+        dir - the directory to inspect
+        delta - the maximum age of the file
+        recursive - trues will find files in subdirectories
+    """
     if exists(dir) :
         contents = glob.iglob(os.path.join(dir, "*"), recursive=recursive)
         for item in contents :
@@ -239,9 +272,11 @@ def removeFiles(dir:str, delta:time.timedelta, recursive:bool = False) :
                 delete(item)
 
 
-# Read the contents of a file.
-#  Really should only used for small file as it reads in the entire contents.
 def readFile(path:str, encoding:str = "utf-8") -> str :
+    """
+    Read the contents of a file.
+    Really should only used for small file as it reads in the entire contents.
+    """
     contents:str = None
     if exists(path) :
         with open(path, encoding=encoding) as file:

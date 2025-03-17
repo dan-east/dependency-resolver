@@ -9,52 +9,142 @@
             "description" : "The minimised version of the verjio server. May be used by all internal servers that require a verj.io server.",
             "target_dir" : "/ebase/api_server",
             "target_name" : "VerjioServer.tar.gz",
-            "source" : "verjio_5.13_min"
+            "target_relative_root" : true,
+            "source" : "verjio_5.13_latest",
+            "source_path" : "server/lin/min/VerjioServer_5_13_3_linux64.tar.gz"
         },
         {
             "name" : "FullVerjIoServer",
             "description" : "The full version of the verjio server. Used by some customer-facing server that use a verj.io server. Contains things like reference documentation.",
             "target_dir" : "/ebase/full_server",
             "target_name" : "VerjioServer.tar.gz",
-            "source" : "verjio_5.13_full"
+            "source" : "verjio_5.13_latest",
+            "source_path" : "server/lin/VerjioServer_5_13_3_linux64.tar.gz"
         },
         {
             "name" : "ControllerVerjIoServer",
             "description" : "The minimised version of the verjio server for use by the controller container (docker mandates that it must be part of the image filesystem).",
             "target_dir" : "/servicePlan/components/controller/verjioServer",
             "target_name" : "VerjioServer.tar.gz",
-            "source" : "verjio_5.13_min"
+            "source" : "verjio_5.13_latest",
+            "source_path" : "server/lin/min/VerjioServer_5_13_3_linux64.tar.gz"
         },
         {
             "name" : "WebAppVerjIoServer",
             "description" : "The minimised version of the verjio server for use by the webapp container (docker mandates that it must be part of the image filesystem).",
             "target_dir" : "/servicePlan/components/controller/verjioServer",
             "target_name" : "VerjioServer.tar.gz",
-            "source" : "verjio_5.13_min"
+            "source" : "verjio_5.13_latest",
+            "source_path" : "server/lin/min/VerjioServer_5_13_3_linux64.tar.gz"
+        },
+
+
+        {
+            "name" : "ServicePlans-Paas-Jar",
+            "description" : "The paas jar is an extension to Verj.io On Premises that adds features uses in the cloud. This is added to every service plan via the paas-jar container.",
+            "target_dir" : "/servicePlan/components/paas-jar/fileSystem/infrastructure/servicePlan/paas-jar",
+            "target_name" : "paas.jar",
+            "source" : "verjio_5.13_paas_jar"
+        },
+        {
+            "name" : "CloudPortal-Paas-Jar",
+            "description" : "The paas jar for all the customer portal",
+            "target_dir" : "/customerPortal/verjUserDataFiles/Server/apps/ebase/webapp/WEB-INF/lib",
+            "target_name" : "paas.jar",
+            "source" : "verjio_5.13_paas_jar"
+        },
+        {
+            "name" : "AdminPortal-Paas-Jar",
+            "description" : "The paas jar for all the customer portal",
+            "target_dir" : "/cloudPortal/verjUserDataFiles/Server/apps/ebase/webapp/WEB-INF/lib",
+            "target_name" : "paas.jar",
+            "source" : "verjio_5.13_paas_jar"
+        },
+        {
+            "name" : "Hub-Paas-Jar",
+            "description" : "The paas jar for all the customer portal",
+            "target_dir" : "/hub/verjUserDataFiles/Server/apps/ebase/webapp/WEB-INF/lib",
+            "target_name" : "paas.jar",
+            "source" : "verjio_5.13_paas_jar"
         },
 
         {
-            "name" : "Oracle18-4InitialDB",
+            "name" : "Enactor-Paas-Jar",
+            "description" : "The paas jar for all the customer portal",
+            "target_dir" : "/services/enactor/verjUserDataFiles/Server/apps/ebase/webapp/WEB-INF/lib/paas.jar",
+            "target_name" : "paas.jar",
+            "source" : "verjio_5.13_paas_jar"
+        },
+
+
+        {
+            "name" : "Oracle18-4_InitialDB",
             "description" : "Oracle 18.4 container: A zip of the initial oracle database users get when they add oracle to their service plan. Its a huge size for something thats essentially an empty database.",
-            "target_dir" : "/servicePlan/components/oracle/filesystem/FS-18.4/hidden/databases/",
+            "target_dir" : "/servicePlan/components/oracle/fileSystem/FS-18.4/hidden/databases/",
             "source" : "verjio_cloud_serviceplan_components",
             "source_path" : "oracle/18.4/initialDatabase/oracle.zip",
             "resolve_action" : "unzip"
         },
         {
-            "name" : "Oracle18-4JDCBDriver",
+            "name" : "Oracle18-4_BackupDB",
+            "description" : "Oracle 18.4 container: A zip of the backup oracle database users get when they add oracle to their service plan. Its a huge size for something thats essentially an empty database.",
+            "target_dir" : "/servicePlan/components/oracle/fileSystem/FS-18.4/hidden/databases/",
+            "source" : "verjio_cloud_serviceplan_components",
+            "source_path" : "oracle/18.4/initialDatabase/oracle.zip",
+            "resolve_action" : "unzip"
+        },
+        {
+            "name" : "Oracle18-4_JDCBDriver",
             "description" : "Oracle 18.4 container: The oracle jdbc driver that is added to the webapps when they select an oracle database. Licensing restrictions means that it can't be included by default.",
-            "target_dir" : "/servicePlan/components/oracle/filesystem/FS-18.4/hiddenFileStore/servicePlan/optionalJars/",
+            "target_dir" : "/servicePlan/components/oracle/fileSystem/FS-18.4/hiddenFileStore/servicePlan/optionalJars/",
             "source" : "verjio_cloud_serviceplan_components",
             "source_path" : "oracle/jdbc/8/ojdbc8.jar"
         },
         {
-            "name" : "Oracle18-4rpm",
+            "name" : "Oracle18-4_rpm",
             "description" : "Oracle 18.4 container: The oracle 18.4 'express' rpm",
             "target_dir" : "/servicePlan/components/oracle/image/18.4/files",
             "source" : "verjio_cloud_serviceplan_components",
             "source_path" : "oracle/18.4/oracle-database-xe-18c-1.0-1.x86_64.rpm"
+        },
+
+
+
+        {
+            "name" : "SqlServer2022_InitialDB",
+            "description" : "SqlServer container: A zip of the initial sqlserver database users get when they add sqlserver 2022 to their service plan.",
+            "target_dir" : "/servicePlan/components/sqlserver/fileSystem/FS-2200/hidden/databases/",
+            "source" : "verjio_cloud_serviceplan_components",
+            "source_path" : "sqlserver/2022/initialDatabase/sqlserver.zip",
+            "resolve_action" : "unzip"
+        },
+        {
+            "name" : "Maria_10-2_InitialDB",
+            "description" : "Maris 10.2 container: A zip of the initial maria database users get when they add maria 10.2 to their service plan.",
+            "target_dir" : "/servicePlan/components/mariadb/filesystem/FS-10.2/hidden/databases/",
+            "source" : "verjio_cloud_serviceplan_components",
+            "source_path" : "mariadb/10.2/initialDatabase/mariadb.zip",
+            "resolve_action" : "unzip"
+        },
+
+
+        {
+            "name" : "WebApp_Log4J",
+            "description" : "Webapp container: requires several libraries to get going. Possibly can be done in the image file (which would be better)",
+            "target_dir" : "/servicePlan/components/webApp/image/1.0/verjInstallationFiles/Server/tomcat/log4j2/lib",
+            "source" : "verjio_cloud_downloads",
+            "source_path" : "log4j/2.17.1/4*.jar files"
+        },
+
+        {
+            "name" : "WebApp_Log4JWebApp",
+            "description" : "Webapp container: requires several libraries to get going. Possibly can be done in the image file (which would be better)",
+            "target_dir" : "/servicePlan/components/webApp/image/1.0/privateWebAppFiles/WEB-INF/lib",
+            "source" : "verjio_cloud_downloads",
+            "source_path" : "log4j/2.17.1/log4j-layout-template-json-2.17.1.jar"
         }
+
+
     ],
 
     "sources" :
@@ -65,22 +155,27 @@
             "type" : "project"
         },
         {
-            "name" : "verjio_public",
+            "name" : "verjio_public_downloads",
             "protocol" : "https",
             "base" : "https://downloads.verj.io/verjio"
         },
         {
-            "name" : "verjio_5.13_full",
+            "name" : "verjio_full",
             "protocol" : "https",
-            "base" : "https://downloads.verj.io/verjio/v5.13.3/server/lin/VerjioServer_5_13_3_linux64.tar.gz"
+            "base" : "https://downloads.verj.io/verjio/v5.13.4/server/lin/VerjioServer_5_13_4_linux64.tar.gz"
         },
         {
-            "name" : "verjio_5.13_min",
+            "name" : "verjio_min",
             "protocol" : "https",
-            "base" : "https://downloads.verj.io/verjio/v5.13.3/server/lin/min/VerjioServer_5_13_3_linux64.tar.gz"
+            "base" : "https://downloads.verj.io/verjio/v5.13.4/server/lin/min/VerjioServer_5_13_4_linux64.tar.gz"
         },
         {
-            "name" : "verjio_cloud",
+            "name" : "verjio_paas_jar",
+            "protocol" : "https",
+            "base" : "https://downloads.verj.io/verjio/v5.13.4/paas-jar/paas.jar"
+        },
+        {
+            "name" : "verjio_cloud_downloads",
             "protocol" : "https",
             "base" : "https://downloads.verj.io/verjio/cloud"
         },
@@ -108,5 +203,8 @@
         "copy",
         "unzip",
         "untar"
-    ]
+    ],
+
+    "target_root" : "",
+    "cache_root" : ""
 }

@@ -1,6 +1,6 @@
 import logging
 from .creator import Creator
-from ..utilities import helpers
+from ..utilities import helpers, file
 from ..errors.errors import FetchError, ResolveError
 from ..configuration.configuration import Configuration
 from ..configuration.attributes import ConfigAttributes
@@ -28,8 +28,29 @@ class Project :
         self._config:Configuration = configuration
         self._creator:Creator = Creator(self._getConfiguration())
         self._parseConfig()
-        self.setCache(cache)
+        self._setCache(cache)
         
+
+    def printDependencyTarget(self, name:str) :
+        """
+        Prints the full target path of the named dependency.
+        Cannot be used to infer whether the dependency has been fetched yet.
+        
+        Parameters:
+            name - the name of the dependency to find.
+        """
+        dependency:Dependency = self._getDependencies().getDependency(name)
+        if dependency is not None :
+            print(file.buildPath(self._determineTargetRoot(dependency), dependency.getTargetPath()))
+
+
+    def _determineTargetRoot(self, dependency:Dependency) -> str :
+        """
+        Returns the root target of the dependency. 
+        This is either relative to the configuration file or may have been overridden in the configuration itself, on a dependency-by-dependency basis.
+        """
+        return self._getTargetRoot() if dependency.isTargetRelativeToRoot() else self._getConfiguration().getConfigurationHome()
+
 
     def fetchDependencies(self, alwaysFetch:bool = False) :
         """ 
@@ -40,7 +61,7 @@ class Project :
         """
         _logger.debug(f"Fetching all dependencies (force download = {alwaysFetch})")
 
-        # A map of dependendcies already downloaded this fetch
+        # A map of dependencies already downloaded this fetch
         alreadyDownloaded:list[str] = []
 
         print(f"Fetching {len(self._getDependencies().getDependencies())} dependencies:")
@@ -71,7 +92,7 @@ class Project :
         Raises:
             FetchError if an error is encountered during the fetch
         """
-        _logger.debug(f"Fetching all dependency {dependency.getName()} (force download = {alwaysFetch})")
+        _logger.debug(f"Fetching dependency {dependency.getName()} (force download = {alwaysFetch})")
         self._getCache().fetchDependency(dependency, alwaysFetch)
         _logger.debug(f"...fetched dependency {dependency.getName()}.")
         
@@ -81,7 +102,7 @@ class Project :
         Resolve the dependencies by moving their fetched source to the target location.
 
         Parameters:
-            onlyMissing - Only resolve those sources that are missing at the required direction. Note actions that are not file copies (e.g. unzipping) are always resolved.
+            onlyMissing - Only resolve those sources that are missing at the target location. Note actions that are not file copies (e.g. unzipping) are always resolved.
         """
         _logger.debug(f"Resolving all dependencies (only missing = {onlyMissing})")
 
@@ -104,13 +125,13 @@ class Project :
         Fetch the source of specified dependency. 
         
         Parameters:
-            onlyMissing - Only resolve those sources that are missing at the required direction. Note actions that are not file copies (e.g. unzipping) are always resolved.
+            onlyMissing - Only resolve those sources that are missing at the target location. Note actions that are not file copies (e.g. unzipping) are always resolved.
 
         Raises:
             ResolveError if an error is encountered during the resolve action
         """
         _logger.debug(f"Resolving dependency {dependency.getName()} (only missing = {onlyMissing})")
-        self._getCache().resolveDependency(dependency, self._getConfiguration().getConfigurationHome(), onlyMissing)
+        self._getCache().resolveDependency(dependency, self._determineTargetRoot(dependency), onlyMissing)
         _logger.debug(f"...resolved dependency {dependency.getName()}.")
 
 
@@ -119,7 +140,7 @@ class Project :
         Resolve all dependencies. Fetch any sources prior to resolving them.
 
         Parameters:
-            onlyMissing - Only resolve those sources that are missing at the required direction. Note actions that are not file copies (e.g. unzipping) are always resolved.
+            onlyMissing - Only resolve those sources that are missing at the target location. Note actions that are not file copies (e.g. unzipping) are always resolved.
         """
         _logger.debug(f"Fetching and resolving dependencies (force download = {alwaysFetch})")
         self.fetchDependencies(alwaysFetch)
@@ -127,48 +148,67 @@ class Project :
         _logger.debug(f"...fetched and resolved dependencies.")
 
 
-    # Uses the Creator to parse all the dependencies.
     def _parseConfig(self) :
-        self._parseProjectName()
+        """Uses the Creator to parse all the dependencies."""
+        config:dict = self._getConfiguration().getConfiguration()
+        self._parseProjectName(config)
+        self._parseTargetRoot(config)
+        self._parseCacheRoot(config)
         self._sources:Sources = self._creator.createSources()
         self._dependencies:Dependencies = self._creator.createDependencies(self._getSources())
 
-    # Parses the name of this project from the configuration
-    def _parseProjectName(self) :
-        self._projectName:str = helpers.getKey(self._getConfiguration().getConfiguration(), ConfigAttributes.PROJECT_NAME)
+    def _parseProjectName(self, config:dict) :
+        """Parses the name of this project from the configuration."""
+        self._projectName:str = helpers.getKey(config, ConfigAttributes.PROJECT_NAME)
         helpers.assertSet(_logger, "Configuration must specify a Project name (attribute: project)", self._getProjectName())
 
-    # Returns the Configuration.
+    def _parseTargetRoot(self, config:dict) :
+        """Parses the target root for this project from the configuration."""
+        self._targetRoot:str = helpers.getKey(config, ConfigAttributes.TARGET_ROOT)
+
+    def _parseCacheRoot(self, config:dict) :
+        """Parses the cache root for this project from the configuration."""
+        self._cacheRoot:str = helpers.getKey(config, ConfigAttributes.CACHE_ROOT)
+
     def _getConfiguration(self) -> Configuration :
+        """Returns the Configuration."""
         return self._config
   
-    # Returns the name of this project
     def _getProjectName(self) -> str :
+        """Returns the name of this project."""
         return self._projectName
     
-    # Return all the Sources for this project
+    def _getTargetRoot(self) -> str :
+        """Returns the target root. If not set then the configuration home is returned."""
+        return self._targetRoot if self._targetRoot is not None else self._getConfiguration().getConfigurationHome()
+    
+    def _getCacheRoot(self) -> str :
+        """Returns this Project's cache root"""
+        return self._cacheRoot
+    
     def _getSources(self) -> Sources :
+        """Return all the Sources for this project."""
         return self._sources
     
-    # Return all the dependencies for this project
     def _getDependencies(self) -> Dependencies :
+        """Return all the dependencies for this project."""
         return self._dependencies
 
-    def setCache(self, cache:Cache) :
+    def _setCache(self, cache:Cache) :
         """
         Overwrites the cache for this project.
         """
         self._cache:Cache = cache
-        cache.init(self._getProjectName())
+        cache.init(cacheName=self._getProjectName(), cacheRoot=self._getCacheRoot())
         
-    # Returns the cache.
     def _getCache(self) :
+        """Returns the cache."""
         return self._cache
     
-    # Remember we have already downloaded this source target.
     def _addDownloaded(self, alreadyDownloaded:list[str], dependency:Dependency) :
+        """Remember we have already downloaded this source target."""
         alreadyDownloaded.append(dependency.getAbsoluteSourcePath())
 
-    # Checks to we if we have already downloaded this source target.
     def _hasBeenDownloaded(self, alreadyDownloaded:list[str],  dependency:Dependency) :
+        """Checks to we if we have already downloaded this source target."""
         return dependency.getAbsoluteSourcePath() in alreadyDownloaded

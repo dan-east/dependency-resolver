@@ -69,11 +69,12 @@ class Creator :
         name:str = helpers.getKey(dependency, ConfigAttributes.DEPENDENCY_NAME)
         targetDir:str = helpers.getKey(dependency, ConfigAttributes.DEPENDENCY_TARGET_DIR)
         targetName:str = helpers.getKey(dependency, ConfigAttributes.DEPENDENCY_TARGET_NAME)
+        targetRelativeRoot:bool = helpers.getKey(dependency, ConfigAttributes.DEPENDENCY_TARGET_RELATIVE_ROOT)
         source:Source = sources.getSource(helpers.getKey(dependency, ConfigAttributes.DEPENDENCY_SOURCE_DEPENDENCY))
         sourcePath:str = helpers.getKey(dependency, ConfigAttributes.DEPENDENCY_SOURCE_PATH)
         action:ResolveAction = ResolveAction.determine(helpers.getKey(dependency, ConfigAttributes.RESOLVE_ACTION))
         description:str = helpers.getKey(dependency, ConfigAttributes.DEPENDENCY_DESCRIPTION)
-        return Dependency(name=name, targetDir=targetDir, targetName=targetName, source=source, sourcePath=sourcePath, resolveAction=action, description=description)
+        return Dependency(name=name, targetDir=targetDir, targetName=targetName, targetRelativeRoot=targetRelativeRoot, source=source, sourcePath=sourcePath, resolveAction=action, description=description)
 
 
     # Returns the Configuration as given

@@ -4,7 +4,7 @@ from sys import exit
 _logger=logging.getLogger(__name__)
 
 # Exits the program is the given variable is None.
-#  logger: uses the caller's modules' logger in a attmept to make any resulting logs more contextually relevant
+#  logger: uses the caller's modules' logger in a attempt to make any resulting logs more contextually relevant
 def assertSet(logger:logging.Logger, message:str, variable:any) :
     if not isSet(logger, message, variable) : 
         exit(1)

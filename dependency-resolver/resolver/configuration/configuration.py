@@ -8,10 +8,10 @@ class Configuration :
     def __init__(self, configurationPath:str) :
         helpers.assertSet(_logger, f"Please specify path to configuration JSON file", configurationPath)
         self._configPath:str = configurationPath
-        self._loadConfigutation()
+        self._loadConfiguration()
 
     # Load the configuration 
-    def _loadConfigutation(self) :
+    def _loadConfiguration(self) :
         if file.isFile(self._getConfigurationPath()) :
             self._config:dict = json.parseFromFile(self._getConfigurationPath())
             helpers.assertSet(_logger, f"Unable to load the JSON representation in the path {self._getConfigurationPath()}", self.getConfiguration()) # make sure we managed to open the configuration
@@ -27,7 +27,7 @@ class Configuration :
         return self._configPath
     
     def getConfigurationHome(self) -> str :
-        """Returns the path to the direcory the configuration file was loaded from. All dependency targets are relative to this directory."""
+        """Returns the path to the directory the configuration file was loaded from. All dependency targets are relative to this directory."""
         return file.getParentDirectory(self._getConfigurationPath())
 
     # Returns the loaded configuration.
@@ -95,6 +95,7 @@ class Configuration :
         
     # Adds any errors found in the source to a list of previous errors.
     def _validateDependency(self, dependency:dict, errors:list[str]) :
+        helpers.addIfNotNone(errors, self._doesKeyExist(dependency, ConfigAttributes.DEPENDENCY_NAME))
         helpers.addIfNotNone(errors, self._doesKeyExist(dependency, ConfigAttributes.DEPENDENCY_TARGET_DIR))
         helpers.addIfNotNone(errors, self._doesKeyExist(dependency, ConfigAttributes.DEPENDENCY_SOURCE_DEPENDENCY))
 

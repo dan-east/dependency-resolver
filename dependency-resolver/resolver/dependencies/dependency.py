@@ -11,22 +11,24 @@ _logger = logging.getLogger(__name__) # module name
 # An action may be defined to perform on the source file as part of resolving this dependency, for example unzip the source file.
 class Dependency :
 
-    def __init__(self, name:str, targetDir:str, targetName:str, source:Source, sourcePath:str = None, resolveAction:ResolveAction = None, description:str = None) :
+    def __init__(self, name:str, targetDir:str, targetName:str, targetRelativeRoot:bool, source:Source, sourcePath:str = None, resolveAction:ResolveAction = None, description:str = None) :
         """
             Parameters:
-                targetDir - the path to the target location for the dependancy. This path is relative to the project location (the dir containing the dependancies json configuration)
+                targetDir - the path to the target location for the dependency. This path is relative to the project location (the dir containing the dependencies json configuration)
                 targetName - The target file name. Can be None to represent a directory target.
+                targetRelativeRoot - Should this dependency be put relative to a specified root (opposed to relative to the configuration file)
                 source - optional. Defines the base url and protocol of the dependency source. Overwrites the sourceProtocol if specified.
-                sourcePath - the path to the source. Can be absolute or relative to the base atttibute of the optional source parameter.
+                sourcePath - the path to the source. Can be absolute or relative to the base attribute of the optional source parameter.
                 resolveAction - optional. Defines an action carried out when resolving this action.
-                description - optional. Can be used to describe the dependancy.
+                description - optional. Can be used to describe the dependency.
         """
         helpers.assertSet(_logger, f"The dependency have a {ConfigAttributes.DEPENDENCY_NAME} attribute in dependency: {ConfigAttributes.DEPENDENCY_TARGET_DIR}={targetDir}, {ConfigAttributes.DEPENDENCY_TARGET_NAME}={targetName}, {ConfigAttributes.DEPENDENCY_SOURCE_PATH}={sourcePath}.", source)
         helpers.assertSet(_logger, f"The {ConfigAttributes.DEPENDENCY_SOURCE_DEPENDENCY} attribute must be specified in dependency: {ConfigAttributes.DEPENDENCY_TARGET_DIR}={targetDir}, {ConfigAttributes.DEPENDENCY_TARGET_NAME}={targetName}, {ConfigAttributes.DEPENDENCY_SOURCE_PATH}={sourcePath}.", source)
         helpers.assertSet(_logger, f"The {ConfigAttributes.DEPENDENCY_TARGET_DIR} attribute must be set in dependency: {ConfigAttributes.DEPENDENCY_TARGET_NAME}={targetName}, {ConfigAttributes.DEPENDENCY_SOURCE_DEPENDENCY}={source.getName()}, {ConfigAttributes.DEPENDENCY_SOURCE_PATH}: {sourcePath}", targetDir)
         self._name:str = name
         self._targetDir:str = targetDir
-        self._targetName:str = targetName      
+        self._targetName:str = targetName
+        self._targetRelativeRoot:bool = targetRelativeRoot    
         self._source:Source = source
         self._sourcePath:str = sourcePath
         self._resolveAction:ResolveAction = resolveAction
@@ -57,7 +59,12 @@ class Dependency :
         """Returns the target file name for this dependency."""
         return self._targetName
 
-    
+
+    def isTargetRelativeToRoot(self) -> bool :
+        """Should this target be  placed relative to the project's target root (opposed to the configuration file)."""
+        return self._targetRelativeRoot
+
+
     def getAbsoluteSourcePath(self) -> str :
         """Returns the source complete path to this dependency's source. May include the protocol depending on how the source is fetched."""
         return self.getSource().getAbsoluteSourcePath(self.getSourcePath())

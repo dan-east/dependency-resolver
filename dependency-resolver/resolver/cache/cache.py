@@ -1,6 +1,5 @@
 import logging
-import os
-from ..utilities import file
+from ..utilities import file, helpers
 from ..dependencies.dependency import Dependency
 from ..errors.errors import FetchError, ResolveError
 
@@ -19,31 +18,40 @@ class Cache() :
             Parameters:
                 cacheRoot - the home/root directory of the cache. All downloaded sources will be added somewhere in this directory.
         """
-        self._setCacheRoot(cacheRoot)
+        # initialise the cache root and cache name, so they are defined.
+        self._cacheRoot = None
+        self._cacheName = None
+        self.init(cacheRoot=cacheRoot)
 
 
     def clean(self) :
-        """Empty the cache"""
+        """Empty the cache."""
         if file.exists(self._getCachePath()) :
             _logger.info(f"Cleaning cache: {self._getCachePath()}")
             file.deleteContents(self._getCachePath())
         
 
-    def init(self, cacheName:str = None) :
+    def init(self, cacheName:str = None, cacheRoot:str = None) :
         """
-        Initialises the cache. 
+        Initializes the cache. 
         Must be called before it is used.
 
         Parameters:
-            cacheName - Can give this cache a specific name. All sources will be downloaded under this name, seperating the from the rest of the cache. Optional.
+            cacheName - Can give this cache a specific name. All sources will be downloaded under this name, separating the from the rest of the cache. Optional.
+            cacheRoot - Set the root of the cache. Optional.
         """
+        # If we have not been instantiated with a root then use the project's cache root, if specified.
+        if helpers.isEmpty(self._getCacheRoot()) :
+            self._setCacheRoot(cacheRoot)
+
         self._setCacheName(cacheName)
+        
         file.mkdir(self._getCachePath(), mode=0o755) # make sure the cache directory exists
 
 
     def fetchDependency(self, dependency:Dependency, alwaysFetch:bool = False) :
         """
-        Fetches a dependancy's source into the cache.
+        Fetches a dependency's source into the cache.
         
         Parameters:
             dependency - the dependency to fetch.
@@ -74,7 +82,7 @@ class Cache() :
 
     def resolveDependency(self, dependency:Dependency, targetHomeDir:str, onlyMissing:bool = False) :
         """
-        Resolves a dependancy by performing its Resolve action from the fetched source in the cache into the target location.
+        Resolves a dependency by performing its Resolve action from the fetched source in the cache into the target location.
         
         Parameters:
             dependency - the dependency to resolve.
@@ -113,22 +121,23 @@ class Cache() :
     
 
     # Sets the root of this cache.
-    def _setCacheRoot(self, cacheRoot:str = None) :
-        if cacheRoot :
+    def _setCacheRoot(self, cacheRoot:str) :
+        if helpers.hasValue(cacheRoot) :
             if not file.exists(cacheRoot) or (file.exists(cacheRoot) and file.isDir(cacheRoot)) :
                 self._cacheRoot:str = cacheRoot
             else :
                 _logger.error(f"Unable to create cache with a root of {cacheRoot} - a file already exists at this location (at least its not a directory - could be a permission thing also).")
                 exit(1)
-        else :
-            self._cacheRoot:str = file.buildPath(os.getcwd(), "resolverCache") # same place as being run from.
-        
-        _logger.debug(f"Caching to {self._getCacheRoot()}")
+        else : # Set the cache root to empty - python will complain if its requested, but nothing has been defined.
+            self._cacheRoot:str = None
+           
+        self._setCachePath()
 
 
     # Returns the root path of the cache
     def _getCacheRoot(self) -> str :
         return self._cacheRoot
+
 
     # Sets the name of this cache. This can be used to use a specific cache for a project rather than using the same cache for everything.
     def _setCacheName(self, cacheName:str) :
@@ -137,7 +146,7 @@ class Cache() :
         else :
             self._cacheName = cacheName
     
-        self._setCachePath(self._getCacheRoot(), self._getCacheName())
+        self._setCachePath()
 
 
     # Returns the name of the cache - this is configurable for each project (and is often the name of the project)
@@ -145,13 +154,22 @@ class Cache() :
         return self._cacheName
     
     # Constructs and sets the path for the cache.
-    def _setCachePath(self, root:str, name:str) :
-         self._cachePath:str = file.buildPath(root, name)
+    def _setCachePath(self) :
+        root:str = self._getCacheRoot()
+
+        # if nothing has been set, default to the user's home directory
+        if helpers.isEmpty(root) :
+            root = file.buildPath(file.getUserDirectory(), ".resolverCache") 
+
+        self._cachePath:str = file.buildPath(root, self._getCacheName())
+        _logger.debug(f"Caching to {self._getCachePath()}")
     
+
     # Returns the path for this cache
     def _getCachePath(self) -> str :
         return self._cachePath
     
+
     # Is there an entry in the cache for this dependency already?
     def _isCached(self, dependency:Dependency) -> bool :
         return file.exists(self._generateCacheDownloadPath(dependency))

@@ -5,7 +5,7 @@ import logging
 import traceback
 import constants
 from collections.abc import Sequence
-from resolver.utilities import dependencies, file, helpers, log
+from resolver.utilities import file, helpers, log
 from resolver.configuration.configuration import Configuration
 from resolver.project.project import Project
 from resolver.cache.cache import Cache
@@ -22,25 +22,15 @@ def _init() :
 def _commandRunner() :
     parser = argparse.ArgumentParser(description="Fetch and resolve external dependencies for a project.")
     subparsers = parser.add_subparsers()
-    _installRequiredPackages(subparsers)
     _printConfig(subparsers)
     _validateConfig(subparsers)
+    _printDependencyTargetPath(subparsers)
     _updateSourceCache(subparsers)
     _resolveFromCacheDependencies(subparsers)
     _resolveDependencies(subparsers)
     args = parser.parse_args()
     args.func(args)
 
-
-# Install any required python libraries.
-def _installRequiredPackages(subparsers) :
-    runner = subparsers.add_parser("install_python_dependencies", help="Install any extra non-default python library dependencies using pip.")
-    runner.set_defaults(func=_installRequiredPackagesCommand)
-    
-def _installRequiredPackagesCommand(args:Sequence[str]) :
-    requiredPackages:list[str] = ["requests"] # todo - could externalise this list at some point.
-    dependencies.installPackages(requiredPackages)
-   
 
 # Print the configuration at the specified path.
 def _printConfig(subparsers) :
@@ -62,13 +52,25 @@ def _validateCommand(args:Sequence[str]) :
     _createConfiguration(args).validateConfiguration()
 
 
+# Print the configuration at the specified path.
+def _printDependencyTargetPath(subparsers) :
+    runner = subparsers.add_parser("print_dependency_target", help="Prints the target full path for a given dependency name. Do not infer that the dependency has been fetched.")
+    runner.add_argument("--name", "-n", help='The name of the dependency', required=True)
+    runner.add_argument("--configPath", "-c", help='The path to the configuration file', required=True)
+    runner.add_argument("--cacheRoot", "-R", help='The root of the cache to use for the downloads. Overrides the value in the configuration file (if set)', required=False)
+    runner.set_defaults(func=_printDependencyTargetPathCommand)
+
+def _printDependencyTargetPathCommand(args:Sequence[str]) :
+    _createProject(args).printDependencyTarget(name=args.name)
+
+
 # Update every dependencies source in the cache.
 def _updateSourceCache(subparsers) :
     runner = subparsers.add_parser("update_cache", help="Download sources and cache them.")
     runner.add_argument("--clean", action="store_true", help='Clean the cache and logs before downloading Sources. Essentially rebuilds the cache for the given configuration.')
     runner.add_argument("--force", action="store_true", help='Force the update of any source for this project.')
     runner.add_argument("--configPath", "-c", help='The path to the configuration file', required=True)
-    runner.add_argument("--cacheRoot", "-R", help='The root of the cache to use for the downloads.', required=False)
+    runner.add_argument("--cacheRoot", "-R", help='The root of the cache to use for the downloads. Overrides the value in the configuration file (if set)', required=False)
     runner.set_defaults(func=_updateSourceCacheCommand)
 
 def _updateSourceCacheCommand(args:Sequence[str]) :
@@ -85,7 +87,7 @@ def _updateSourceCacheCommand(args:Sequence[str]) :
 def _resolveFromCacheDependencies(subparsers) :
     runner = subparsers.add_parser("resolve_from_cache", help="Resolve all dependencies. Must have performed an update_cache to fetch the sources first.")
     runner.add_argument("--configPath", "-c", help='The path to the configuration file', required=True)
-    runner.add_argument("--cacheRoot", "-R", help='The root of the cache to use for the downloads.', required=False)
+    runner.add_argument("--cacheRoot", "-R", help='The root of the cache to use for the downloads. Overrides the value in the configuration file (if set)', required=False)
     runner.set_defaults(func=_resolveFromCacheDependenciesCommand)
 
 def _resolveFromCacheDependenciesCommand(args:Sequence[str]) :
@@ -98,7 +100,7 @@ def _resolveDependencies(subparsers) :
     runner.add_argument("--clean", action="store_true", help='Clean the cache and logs before downloading Sources. Essentially rebuilds the cache for the given configuration.')
     runner.add_argument("--force", action="store_true", help='Always fetch of the source even if already previously fetched.')
     runner.add_argument("--configPath", "-c", help='The path to the configuration file', required=True)
-    runner.add_argument("--cacheRoot", "-R", help='The root of the cache to use for the downloads.', required=False)
+    runner.add_argument("--cacheRoot", "-R", help='The root of the cache to use for the downloads. Overrides the value in the configuration file (if set)', required=False)
     runner.set_defaults(func=_resolveDependenciesCommand)
 
 def _resolveDependenciesCommand(args:Sequence[str]) :
@@ -119,7 +121,7 @@ def _resetLogFile() :
     file.emptyFileContents(constants.LOG_TO_FILE)
 
 
-# Instansiate the Dependencies class from the supplied command-line arguments.
+# Instantiate the Dependencies class from the supplied command-line arguments.
 def _createConfiguration(args:Sequence[str]) -> Configuration :
     if args and helpers.hasValue(args.configPath) :
         return Configuration(configurationPath=args.configPath)
@@ -139,13 +141,13 @@ def _loadConfiguration(args:Sequence[str]) -> Configuration :
     return config
 
 
-# Instansiate the Project with the specified configuration.
+# Instantiate the Project with the specified configuration.
 def _createProject(args:Sequence[str]) -> Project :
     project:Project = Project(_loadConfiguration(args), _createCache(args))
     return project
 
 
-# Instansiate the Cache. A cacheName can be used to specify a seperate cache to use.
+# Instantiate the Cache. A cacheName can be used to specify a separate cache to use.
 def _createCache(args:Sequence[str]) -> Cache :
     if args :
         return Cache(cacheRoot=args.cacheRoot)

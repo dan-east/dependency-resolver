@@ -1,5 +1,5 @@
 import logging
-from enum import StrEnum
+from strenum import StrEnum # StrEnum is available by default (from enum import StrEum) from python 3.11 onwards.
 
 _logger = logging.getLogger(__name__)
 
@@ -7,6 +7,10 @@ class ConfigAttributes(StrEnum) :
     # top level
     PROJECT_NAME = "project"
     VERSION = "version"
+
+    # config
+    TARGET_ROOT = "target_root"
+    CACHE_ROOT = "cache_root"
     
     # sources
     SOURCES = "sources"
@@ -30,6 +34,8 @@ class ConfigAttributes(StrEnum) :
     DEPENDENCY_TARGET_NAME = "target_name"
     DEPENDENCY_SOURCE_DEPENDENCY = "source"
     DEPENDENCY_SOURCE_PATH = "source_path"
+    DEPENDENCY_TARGET_RELATIVE_ROOT = "target_relative_root"
+    DEPENDENCY_ALWAYS_REFRESH = "always_refresh"
 
     RESOLVE_ACTION = "resolve_action"
     RESOLVE_COPY = "copy"
