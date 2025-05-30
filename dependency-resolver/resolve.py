@@ -3,9 +3,9 @@
 import argparse
 import logging
 import traceback
+from typing import Optional
 import constants
-from collections.abc import Sequence
-from resolver.utilities import file, helpers, log
+from resolver.utilities import file_util, helpers, log_util
 from resolver.configuration.configuration import Configuration
 from resolver.project.project import Project
 from resolver.cache.cache import Cache
@@ -15,7 +15,7 @@ _logger = logging.getLogger(__name__)
 
 # Sets up the whole shebang
 def _init() :
-    log.setupRootLogging(constants.LOG_TO_FILE)
+    log_util.setupRootLogging(constants.LOG_TO_FILE)
 
 
 # Deals with all the command-line interface
@@ -28,7 +28,7 @@ def _commandRunner() :
     _updateSourceCache(subparsers)
     _resolveFromCacheDependencies(subparsers)
     _resolveDependencies(subparsers)
-    args = parser.parse_args()
+    args:argparse.Namespace = parser.parse_args()
     args.func(args)
 
 
@@ -38,7 +38,7 @@ def _printConfig(subparsers) :
     runner.add_argument("--configPath", "-c", help='The path to the configuration file', required=True)
     runner.set_defaults(func=_printCommand)
 
-def _printCommand(args:Sequence[str]) :
+def _printCommand(args:argparse.Namespace) :
     _createConfiguration(args).printConfiguration()
 
 
@@ -48,7 +48,7 @@ def _validateConfig(subparsers) :
     runner.add_argument("--configPath", "-c", help='The path to the configuration file', required=True)
     runner.set_defaults(func=_validateCommand)
 
-def _validateCommand(args:Sequence[str]) :
+def _validateCommand(args:argparse.Namespace) :
     _createConfiguration(args).validateConfiguration()
 
 
@@ -60,7 +60,7 @@ def _printDependencyTargetPath(subparsers) :
     runner.add_argument("--cacheRoot", "-R", help='The root of the cache to use for the downloads. Overrides the value in the configuration file (if set)', required=False)
     runner.set_defaults(func=_printDependencyTargetPathCommand)
 
-def _printDependencyTargetPathCommand(args:Sequence[str]) :
+def _printDependencyTargetPathCommand(args:argparse.Namespace) :
     _createProject(args).printDependencyTarget(name=args.name)
 
 
@@ -73,7 +73,7 @@ def _updateSourceCache(subparsers) :
     runner.add_argument("--cacheRoot", "-R", help='The root of the cache to use for the downloads. Overrides the value in the configuration file (if set)', required=False)
     runner.set_defaults(func=_updateSourceCacheCommand)
 
-def _updateSourceCacheCommand(args:Sequence[str]) :
+def _updateSourceCacheCommand(args:argparse.Namespace) :
     project:Project = _createProject(args)
 
     # delete the current log file.
@@ -90,7 +90,7 @@ def _resolveFromCacheDependencies(subparsers) :
     runner.add_argument("--cacheRoot", "-R", help='The root of the cache to use for the downloads. Overrides the value in the configuration file (if set)', required=False)
     runner.set_defaults(func=_resolveFromCacheDependenciesCommand)
 
-def _resolveFromCacheDependenciesCommand(args:Sequence[str]) :
+def _resolveFromCacheDependenciesCommand(args:argparse.Namespace) :
     _createProject(args).resolveFetchedDependencies()
 
 
@@ -103,26 +103,26 @@ def _resolveDependencies(subparsers) :
     runner.add_argument("--cacheRoot", "-R", help='The root of the cache to use for the downloads. Overrides the value in the configuration file (if set)', required=False)
     runner.set_defaults(func=_resolveDependenciesCommand)
 
-def _resolveDependenciesCommand(args:Sequence[str]) :
+def _resolveDependenciesCommand(args:argparse.Namespace) :
     _createProject(args).resolveDependencies(alwaysFetch=args.force)
 
 
 # Cleans the log and cache
-def _clean(project:Project = None) :
+def _clean(project:Optional[Project]) :
     _resetLogFile()
     _logger.debug("Cleaned log file")
-    if project :
+    if project is not None :
         project.clean()
         
 
 # Empties the existing contents of the log file.
 #  Helpful when testing.
 def _resetLogFile() :
-    file.emptyFileContents(constants.LOG_TO_FILE)
+    file_util.emptyFileContents(constants.LOG_TO_FILE)
 
 
 # Instantiate the Dependencies class from the supplied command-line arguments.
-def _createConfiguration(args:Sequence[str]) -> Configuration :
+def _createConfiguration(args:argparse.Namespace) -> Configuration :
     if args and helpers.hasValue(args.configPath) :
         return Configuration(configurationPath=args.configPath)
 
@@ -130,7 +130,7 @@ def _createConfiguration(args:Sequence[str]) -> Configuration :
 
 
 # Creates and checks the config for errors.
-def _loadConfiguration(args:Sequence[str]) -> Configuration :
+def _loadConfiguration(args:argparse.Namespace) -> Configuration :
     config:Configuration = _createConfiguration(args)
     if config.numberOfErrors() < 0 :
         message:str = "Errors detected in the configuration - please run validate_config command for details."
@@ -142,13 +142,13 @@ def _loadConfiguration(args:Sequence[str]) -> Configuration :
 
 
 # Instantiate the Project with the specified configuration.
-def _createProject(args:Sequence[str]) -> Project :
+def _createProject(args:argparse.Namespace) -> Project :
     project:Project = Project(_loadConfiguration(args), _createCache(args))
     return project
 
 
 # Instantiate the Cache. A cacheName can be used to specify a separate cache to use.
-def _createCache(args:Sequence[str]) -> Cache :
+def _createCache(args:argparse.Namespace) -> Cache :
     if args :
         return Cache(cacheRoot=args.cacheRoot)
 

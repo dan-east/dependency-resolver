@@ -1,12 +1,12 @@
 import logging
 import tarfile
 from tarfile import TarFile
-from . import file
-from .errors import TarError
+from . import file_util
+from .errors_util import TarError
 
 _logger = logging.getLogger(__name__)
 
-def untar(tarPath:str, targetDir:str) -> bool :
+def untar(tarPath:str, targetDir:str) :
     """
     Untar (extracts all from) the specified zip file to the specified directory.
 
@@ -20,7 +20,7 @@ def untar(tarPath:str, targetDir:str) -> bool :
     _logger.debug(f"Untarring {tarPath} -> {targetDir}")
     _validateTarPath(tarPath)
     _validateTargetDirectory(targetDir)
-    file.mkdir(targetDir, mode=0o744) # make target directory in case it doesn't exist.
+    file_util.mkdir(targetDir, mode=0o744) # make target directory in case it doesn't exist.
     try :
         with _createTarFile(tarPath) as tar :
             tar.extractall(targetDir)
@@ -30,7 +30,15 @@ def untar(tarPath:str, targetDir:str) -> bool :
 
 
 def isValidTarPath(tarPath:str) -> bool :
-    """Returns true if the file at the specified path is a tar file."""
+    """
+    Returns true if the file at the specified path is a tar file.
+
+    Args:
+        tarPath (str): The path to the tar file to check.
+
+    Returns:
+        bool: True if the path is a valid tar file, False otherwise.
+    """
     try :
         _validateTarPath(tarPath)
         return True
@@ -41,8 +49,8 @@ def isValidTarPath(tarPath:str) -> bool :
 # Checks to see if the path is actually a tar file.
 def _validateTarPath(tarPath:str) :
     if tarPath :
-        if file.exists(tarPath) :
-            if not tarfile.is_zipfile(tarPath) :
+        if file_util.exists(tarPath) :
+            if not tarfile.is_tarfile(tarPath) :
                 _logger.error(f"{tarPath} is not a tar file.")
                 raise TarError(f"{tarPath} is not a tar file.")
         else :
@@ -56,7 +64,7 @@ def _validateTarPath(tarPath:str) :
 # Checks to see it the target directory is valid
 def _validateTargetDirectory(targetDir:str) :
     if targetDir :
-        if file.exists(targetDir) and not file.isDir(targetDir) :
+        if file_util.exists(targetDir) and not file_util.isDir(targetDir) :
             _logger.error(f"The target directory {targetDir} is actually a file (at least its not a directory).")
             raise TarError(f"The target directory {targetDir} already exists but is a file.")    
     else :
@@ -65,4 +73,4 @@ def _validateTargetDirectory(targetDir:str) :
     
 
 def _createTarFile(path:str, mode:str = 'r') -> TarFile :
-    return tarfile.open(path, mode=mode)
+    return tarfile.open(path, mode=mode)  # type: ignore - mode as a string is valid for tarfile.open

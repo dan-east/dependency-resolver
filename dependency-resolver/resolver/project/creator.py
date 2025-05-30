@@ -19,8 +19,13 @@ class Creator :
         self._config:Configuration = configuration
 
 
-    # Create the Sources as defined in the configuration
     def createSources(self) -> Sources :
+        """
+        Create the Sources as defined in the configuration.
+
+        Returns:
+            Sources: An instance of Sources containing all the sources defined in the configuration.
+        """
         sources:Sources = self._createSources()
 
         sourceConfig:dict = helpers.getKey(self._getConfig(), ConfigAttributes.SOURCES)
@@ -44,11 +49,19 @@ class Creator :
         base:str = helpers.getKey(source, ConfigAttributes.SOURCE_BASE)
         type:SourceType = SourceType.determine(helpers.getKey(source, ConfigAttributes.SOURCE_TYPE))
         description:str = helpers.getKey(source, ConfigAttributes.SOURCE_DESCRIPTION)
-        return Source(name=name, protocol=protocol, base=base, type=type, description=description)
+        return Source(name, protocol, type=type, base=base, description=description)
 
 
-    # Create the Dependencies as defined in the configuration
     def createDependencies(self, sources:Sources) -> Dependencies :
+        """
+        Create the Dependencies as defined in the configuration.
+
+        Args:
+            sources (Sources): An instance of Sources containing all the sources defined in the configuration.
+
+        Returns:
+            Dependencies: An instance of Dependencies containing all the dependencies defined in the configuration.
+        """
         dependencies:Dependencies = self._createDependencies()
 
         dependencyConfig:dict = helpers.getKey(self._getConfig(), ConfigAttributes.DEPENDENCIES)

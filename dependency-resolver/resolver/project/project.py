@@ -1,6 +1,7 @@
 import logging
+from typing import Optional
 from .creator import Creator
-from ..utilities import helpers, file
+from ..utilities import helpers, file_util
 from ..errors.errors import FetchError, ResolveError
 from ..configuration.configuration import Configuration
 from ..configuration.attributes import ConfigAttributes
@@ -39,9 +40,9 @@ class Project :
         Parameters:
             name - the name of the dependency to find.
         """
-        dependency:Dependency = self._getDependencies().getDependency(name)
+        dependency:Optional[Dependency] = self._getDependencies().getDependency(name)
         if dependency is not None :
-            print(file.buildPath(self._determineTargetRoot(dependency), dependency.getTargetPath()))
+            print(file_util.buildPath(self._determineTargetRoot(dependency), dependency.getTargetPath()))
 
 
     def _determineTargetRoot(self, dependency:Dependency) -> str :
@@ -147,6 +148,16 @@ class Project :
         self.resolveFetchedDependencies(onlyMissing)
         _logger.debug(f"...fetched and resolved dependencies.")
 
+
+    def clean(self) :
+        """
+        Cleans the cache and logs for this project.
+        This will delete the cache and log files.
+        """
+        _logger.debug(f"Cleaning project {self._getProjectName()}")
+        self._getCache().clean()
+        _logger.debug(f"...cleaned project {self._getProjectName()}")
+        
 
     def _parseConfig(self) :
         """Uses the Creator to parse all the dependencies."""

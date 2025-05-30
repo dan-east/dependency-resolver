@@ -1,5 +1,5 @@
 import logging
-from ..utilities import file, helpers
+from ..utilities import file_util, helpers
 from ..dependencies.dependency import Dependency
 from ..errors.errors import FetchError, ResolveError
 
@@ -12,26 +12,26 @@ class Cache() :
     defaultDownloadName:str = "downloadedSource"
 
 
-    def __init__(self, cacheRoot:str = None) :
+    def __init__(self, cacheRoot:str = "") :
         """
         Construct the cache.
             Parameters:
                 cacheRoot - the home/root directory of the cache. All downloaded sources will be added somewhere in this directory.
         """
         # initialise the cache root and cache name, so they are defined.
-        self._cacheRoot = None
-        self._cacheName = None
+        self._cacheRoot:str = ""
+        self._cacheName:str = ""
         self.init(cacheRoot=cacheRoot)
 
 
     def clean(self) :
         """Empty the cache."""
-        if file.exists(self._getCachePath()) :
+        if file_util.exists(self._getCachePath()) :
             _logger.info(f"Cleaning cache: {self._getCachePath()}")
-            file.deleteContents(self._getCachePath())
+            file_util.deleteContents(self._getCachePath())
         
 
-    def init(self, cacheName:str = None, cacheRoot:str = None) :
+    def init(self, cacheName:str = "", cacheRoot:str = "") :
         """
         Initializes the cache. 
         Must be called before it is used.
@@ -46,7 +46,7 @@ class Cache() :
 
         self._setCacheName(cacheName)
         
-        file.mkdir(self._getCachePath(), mode=0o755) # make sure the cache directory exists
+        file_util.mkdir(self._getCachePath(), mode=0o755) # make sure the cache directory exists
 
 
     def fetchDependency(self, dependency:Dependency, alwaysFetch:bool = False) :
@@ -61,16 +61,16 @@ class Cache() :
         
         if alwaysFetch or not self._isCached(dependency) :
             targetDir:str = self._generateCacheLocation(dependency)
-            if targetDir and not file.exists(targetDir) :
+            if targetDir and not file_util.exists(targetDir) :
                 _logger.debug(f"Trying to create cache location: {targetDir}")
-                file.mkdir(targetDir, mode=0o755)
+                file_util.mkdir(targetDir, mode=0o755)
 
-            if targetDir and file.isDir(targetDir) :
+            targetName:str = self._generateCachedFileName(dependency)
+            if targetDir and file_util.isDir(targetDir) :
                 cacheDownloadPath:str = self._generateCacheDownloadPath(dependency)
-                if file.exists(cacheDownloadPath) :
-                    file.delete(cacheDownloadPath)
-
-                targetName:str = self._generateCachedFileName(dependency)
+                if file_util.exists(cacheDownloadPath) :
+                    file_util.delete(cacheDownloadPath)
+                
                 dependency.fetchSource(targetDir, targetName)
                 _logger.debug(f"...successfully cached dependency {dependency.getName()}: source {dependency.getSource().getName()}::{dependency.getSourcePath()} -> {targetDir}/{targetName}.")
             else :
@@ -101,7 +101,7 @@ class Cache() :
     # Generates the path to the directory (inside the cache) that the source of the dependency is fetched to.
     def _generateCacheLocation(self, dependency:Dependency) -> str :
         # cache location is based on the source name and the source path   
-        return file.buildPath(self._getCachePath(), dependency.getSource().getName(), dependency.getSourcePath())
+        return file_util.buildPath(self._getCachePath(), dependency.getSource().getName(), dependency.getSourcePath())
 
 
     # Generates the a name to use in the cache to represent the fetched source.
@@ -109,7 +109,7 @@ class Cache() :
     def _generateCachedFileName(self, dependency:Dependency) -> str :
         cacheName:str = dependency.getTargetName()
         if not cacheName and dependency.getSourcePath() : # use the end of the source path if specified.
-            cacheName = file.returnLastPartOfPath(dependency.getSourcePath())
+            cacheName = file_util.returnLastPartOfPath(dependency.getSourcePath())
         if not cacheName : # just use a default name
             cacheName = self.defaultDownloadName 
         return cacheName
@@ -117,19 +117,19 @@ class Cache() :
 
     # Return to the full path (including the file name) of the fetched dependency in the cache.
     def _generateCacheDownloadPath(self, dependency:Dependency) -> str :
-        return file.buildPath(self._generateCacheLocation(dependency), self._generateCachedFileName(dependency))
+        return file_util.buildPath(self._generateCacheLocation(dependency), self._generateCachedFileName(dependency))
     
 
     # Sets the root of this cache.
     def _setCacheRoot(self, cacheRoot:str) :
         if helpers.hasValue(cacheRoot) :
-            if not file.exists(cacheRoot) or (file.exists(cacheRoot) and file.isDir(cacheRoot)) :
+            if not file_util.exists(cacheRoot) or (file_util.exists(cacheRoot) and file_util.isDir(cacheRoot)) :
                 self._cacheRoot:str = cacheRoot
             else :
                 _logger.error(f"Unable to create cache with a root of {cacheRoot} - a file already exists at this location (at least its not a directory - could be a permission thing also).")
                 exit(1)
         else : # Set the cache root to empty - python will complain if its requested, but nothing has been defined.
-            self._cacheRoot:str = None
+            self._cacheRoot:str = ""
            
         self._setCachePath()
 
@@ -141,7 +141,7 @@ class Cache() :
 
     # Sets the name of this cache. This can be used to use a specific cache for a project rather than using the same cache for everything.
     def _setCacheName(self, cacheName:str) :
-        if cacheName is None :
+        if helpers.isEmpty(cacheName):
             self._cacheName = "default"
         else :
             self._cacheName = cacheName
@@ -159,9 +159,9 @@ class Cache() :
 
         # if nothing has been set, default to the user's home directory
         if helpers.isEmpty(root) :
-            root = file.buildPath(file.getUserDirectory(), ".resolverCache") 
+            root = file_util.buildPath(file_util.getUserDirectory(), ".resolverCache") 
 
-        self._cachePath:str = file.buildPath(root, self._getCacheName())
+        self._cachePath:str = file_util.buildPath(root, self._getCacheName())
         _logger.debug(f"Caching to {self._getCachePath()}")
     
 
@@ -172,4 +172,4 @@ class Cache() :
 
     # Is there an entry in the cache for this dependency already?
     def _isCached(self, dependency:Dependency) -> bool :
-        return file.exists(self._generateCacheDownloadPath(dependency))
+        return file_util.exists(self._generateCacheDownloadPath(dependency))

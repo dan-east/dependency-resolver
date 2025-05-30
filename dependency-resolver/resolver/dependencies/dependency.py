@@ -1,6 +1,6 @@
 import logging
 from .resolveAction import ResolveAction
-from ..utilities import helpers, file
+from ..utilities import helpers, file_util
 from ..sources.source import Source
 from ..configuration.attributes import ConfigAttributes
 
@@ -11,7 +11,7 @@ _logger = logging.getLogger(__name__) # module name
 # An action may be defined to perform on the source file as part of resolving this dependency, for example unzip the source file.
 class Dependency :
 
-    def __init__(self, name:str, targetDir:str, targetName:str, targetRelativeRoot:bool, source:Source, sourcePath:str = None, resolveAction:ResolveAction = None, description:str = None) :
+    def __init__(self, name:str, targetDir:str, targetName:str, targetRelativeRoot:bool, source:Source, sourcePath:str, resolveAction:ResolveAction, description:str) :
         """
             Parameters:
                 targetDir - the path to the target location for the dependency. This path is relative to the project location (the dir containing the dependencies json configuration)
@@ -42,7 +42,7 @@ class Dependency :
 
     def getTargetPath(self) -> str :
         """Returns the full target path for the dependency."""
-        return file.buildPath(self._targetDir, self._targetName)
+        return file_util.buildPath(self._targetDir, self._targetName)
 
 
     def isTargetDirectory(self) -> bool :
@@ -109,8 +109,8 @@ class Dependency :
         """
         helpers.assertSet(_logger, f"Cannot resolve the dependency {self.getName()} - the source path wasn't set", sourcePath)
         helpers.assertSet(_logger, f"Cannot resolve the dependency {self.getName()} - the destination directory path wasn't set", targetHomeDir)        
-        targetDir:str = file.buildPath(targetHomeDir, self.getTargetDirectory())
-        file.mkdir(targetDir, mode=0o744) # just in case
+        targetDir:str = file_util.buildPath(targetHomeDir, self.getTargetDirectory())
+        file_util.mkdir(targetDir, mode=0o744) # just in case
         self._getResolveAction().resolve(sourcePath, targetDir) 
         
 

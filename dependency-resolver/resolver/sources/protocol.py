@@ -2,8 +2,7 @@ import logging
 from enum import Enum
 from ..errors.errors import FetchError
 from ..configuration.attributes import ConfigAttributes
-from ..utilities import helpers, file, https, errors
-
+from ..utilities import helpers, file_util, https_util, errors_util
 
 # Logging
 _logger = logging.getLogger(__name__) # module name
@@ -58,9 +57,9 @@ class SourceProtocol(Enum) :
         helpers.assertSet(_logger, f"Cannot fetch - the destination directory was not specified.", destinationDir)
         helpers.assertSet(_logger, f"Cannot fetch - the destination file was not specified.", destinationName)
 
-        file.mkdir(destinationDir, mode=0o744) # Try to make the target destination
-        if file.ensurePathExists(destinationDir) and file.isDir(destinationDir) : # make sure all is ok with the destination.
-            destination:str = file.buildPath(destinationDir, destinationName)
+        file_util.mkdir(destinationDir, mode=0o744) # Try to make the target destination
+        if file_util.ensurePathExists(destinationDir) and file_util.isDir(destinationDir) : # make sure all is ok with the destination.
+            destination:str = file_util.buildPath(destinationDir, destinationName)
             match self :
                 case SourceProtocol.HTTPS :
                     self._fetchHttps(source, destination)
@@ -81,12 +80,8 @@ class SourceProtocol(Enum) :
         Throws:
             FetchError if copy fails.
         """
-        try :
-            file.copy(source, destination)
-        except Exception as exc :
-            _logger.error(f"Failed to fetch {source} -> {destination}", exc_info=True)
-            raise FetchError(f"Failed to fetch {source} -> {destination}.") from exc
-
+        if not file_util.copy(source, destination) :
+            raise FetchError(f"Failed to fetch {source} -> {destination}.")
 
     def _fetchHttps(self, source:str, destination:str) :
         """
@@ -100,6 +95,6 @@ class SourceProtocol(Enum) :
             FetchError if copy fails.
         """
         try :
-            https.download(source, destination)
-        except errors.HttpError as http :
+            https_util.download(source, destination)
+        except errors_util.HttpError as http :
             raise FetchError(f"Failed to fetch {source} -> {destination}.") from http

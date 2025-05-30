@@ -1,6 +1,6 @@
 import logging
 from enum import Enum
-from ..utilities import helpers, file, zip, tar, errors
+from ..utilities import helpers, file_util, zip_util, tar_util, errors_util
 from ..configuration.attributes import ConfigAttributes
 from ..errors.errors import ResolveError
 
@@ -60,17 +60,17 @@ class ResolveAction(Enum) :
 
 
     def _copy(self, sourcePath:str, destinationDir:str):
-        if not file.copy(sourcePath, destinationDir) :
+        if not file_util.copy(sourcePath, destinationDir) :
             raise ResolveError(f"Failed to copy {sourcePath} -> {destinationDir}.")
 
     def _unzip(self, sourcePath:str, destinationDir:str) :
         try :
-            zip.unzip(sourcePath, destinationDir)
-        except errors.ZipError as zipError :
+            zip_util.unzip(sourcePath, destinationDir)
+        except errors_util.ZipError as zipError :
             raise ResolveError(f"Failed to unzip {sourcePath} -> {destinationDir}") from zipError
 
     def _untar(self, sourcePath:str, destinationDir:str) :
         try :
-            tar.untar(sourcePath, destinationDir)
-        except errors.TarError as tarError :
+            tar_util.untar(sourcePath, destinationDir)
+        except errors_util.TarError as tarError :
             raise ResolveError(f"Failed to untar {sourcePath} -> {destinationDir}") from tarError

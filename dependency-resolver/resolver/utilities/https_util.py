@@ -1,6 +1,6 @@
 import logging
 import requests
-from .errors import HttpError
+from .errors_util import HttpError
 
 _logger = logging.getLogger(__name__)
 

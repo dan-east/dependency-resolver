@@ -9,6 +9,14 @@ _logger = logging.getLogger(__name__) # module name
 
 # Call once to set up logging.
 def setupRootLogging(logToFile:str):
+  """
+  Sets up the root logger to log to both stdout and a file.
+  This function creates a directory for the log file if it does not exist,
+  and configures the logger to write debug-level messages to the file and info-level messages to stdout.
+  
+  Args:
+      logToFile (str): The path to the log file where debug messages will be written.
+  """
   os.makedirs(os.path.dirname(logToFile), 0o666, True) # make sure the parent directory exists
 
   root = logging.getLogger(None)

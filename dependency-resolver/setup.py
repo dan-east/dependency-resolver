@@ -4,7 +4,7 @@ import argparse
 import logging
 import traceback
 import constants
-from resolver.utilities import dependencies, log
+from resolver.utilities import dependencies_util, log_util
 from collections.abc import Sequence
 
 
@@ -13,7 +13,7 @@ _logger = logging.getLogger(__name__)
 
 # Sets up the whole shebang
 def _init() :
-    log.setupRootLogging(constants.LOG_TO_FILE)
+    log_util.setupRootLogging(constants.LOG_TO_FILE)
 
 
 # Deals with all the command-line interface
@@ -37,7 +37,7 @@ def _installRequiredPackages(subparsers) :
 def _installRequiredPackagesCommand(args:Sequence[str]) :
     # StrEnum is available by default in python version >=3.11 onwards.
     requiredPackages:list[str] = ["requests", "StrEnum"] # todo - could externalize this list at some point.
-    dependencies.installPackages(requiredPackages)
+    dependencies_util.installPackages(requiredPackages)
 
 
 # the entry point
