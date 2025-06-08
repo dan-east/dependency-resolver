@@ -36,7 +36,7 @@ def _installRequiredPackages(subparsers) :
 
 def _installRequiredPackagesCommand(args:Sequence[str]) :
     # StrEnum is available by default in python version >=3.11 onwards.
-    requiredPackages:list[str] = ["requests", "StrEnum"] # todo - could externalize this list at some point.
+    requiredPackages:list[str] = ["requests", "StrEnum"] # todo - could externalize this list at some point (note: there is a requirements.txt now).
     dependencies_util.installPackages(requiredPackages)
 
 

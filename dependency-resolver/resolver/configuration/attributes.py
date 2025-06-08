@@ -1,5 +1,10 @@
 import logging
-from strenum import StrEnum # StrEnum is available by default (from enum import StrEum) from python 3.11 onwards.
+try :
+    from strenum import StrEnum # for Python versions pre 3.11
+except ImportError :
+    from enum import StrEnum  # for Python versions 3.11+
+
+from enum import StrEnum
 
 _logger = logging.getLogger(__name__)
 
