@@ -11,16 +11,17 @@ _logger = logging.getLogger(__name__) # module name
 # An action may be defined to perform on the source file as part of resolving this dependency, for example unzip the source file.
 class Dependency :
 
-    def __init__(self, name:str, targetDir:str, targetName:str, targetRelativeRoot:bool, source:Source, sourcePath:str, resolveAction:ResolveAction, description:str) :
+    def __init__(self, name:str, targetDir:str, targetName:str, targetRelativeRoot:bool, source:Source, sourcePath:str, resolveAction:ResolveAction, description:str, alwaysUpdate:bool) :
         """
             Parameters:
                 targetDir - the path to the target location for the dependency. This path is relative to the project location (the dir containing the dependencies json configuration)
                 targetName - The target file name. Can be None to represent a directory target.
                 targetRelativeRoot - Should this dependency be put relative to a specified root (opposed to relative to the configuration file)
-                source - optional. Defines the base url and protocol of the dependency source. Overwrites the sourceProtocol if specified.
+                source - Defines the base url and protocol of the dependency source. Overwrites the sourceProtocol if specified.
                 sourcePath - the path to the source. Can be absolute or relative to the base attribute of the optional source parameter.
-                resolveAction - optional. Defines an action carried out when resolving this action.
-                description - optional. Can be used to describe the dependency.
+                resolveAction - Defines an action carried out when resolving this action.
+                description - Can be used to describe the dependency.
+                alwaysUpdate - If True, this dependency will always be fetched and resolved.
         """
         helpers.assertSet(_logger, f"The dependency have a {ConfigAttributes.DEPENDENCY_NAME} attribute in dependency: {ConfigAttributes.DEPENDENCY_TARGET_DIR}={targetDir}, {ConfigAttributes.DEPENDENCY_TARGET_NAME}={targetName}, {ConfigAttributes.DEPENDENCY_SOURCE_PATH}={sourcePath}.", source)
         helpers.assertSet(_logger, f"The {ConfigAttributes.DEPENDENCY_SOURCE_DEPENDENCY} attribute must be specified in dependency: {ConfigAttributes.DEPENDENCY_TARGET_DIR}={targetDir}, {ConfigAttributes.DEPENDENCY_TARGET_NAME}={targetName}, {ConfigAttributes.DEPENDENCY_SOURCE_PATH}={sourcePath}.", source)
@@ -33,6 +34,7 @@ class Dependency :
         self._sourcePath:str = sourcePath
         self._resolveAction:ResolveAction = resolveAction
         self._description:str = description
+        self._alwaysUpdate:bool = alwaysUpdate
 
 
     def getName(self) :
@@ -79,6 +81,13 @@ class Dependency :
         """Returns the Source path of this dependency."""
         return self._sourcePath
     
+    def alwaysUpdate(self) -> bool :
+        """
+        Returns True if this dependency should always be updated, even if it was already been fetched and resolved before.
+        This is useful for dependencies that may change over time, such as the latest version of a file.
+        """
+        return self._alwaysUpdate
+        
 
     def fetchSource(self, targetDir:str, targetName:str) :
         """

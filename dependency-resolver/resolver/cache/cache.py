@@ -59,7 +59,7 @@ class Cache() :
         """
         _logger.debug(f"Downloading dependency {dependency.getName()}...")
         
-        if alwaysFetch or not self._isCached(dependency) :
+        if dependency.alwaysUpdate() or (alwaysFetch or not self._isCached(dependency)) :
             targetDir:str = self._generateCacheLocation(dependency)
             if targetDir and not file_util.exists(targetDir) :
                 _logger.debug(f"Trying to create cache location: {targetDir}")

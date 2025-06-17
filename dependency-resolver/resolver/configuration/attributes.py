@@ -4,8 +4,6 @@ try :
 except ImportError :
     from enum import StrEnum  # for Python versions 3.11+
 
-from enum import StrEnum
-
 _logger = logging.getLogger(__name__)
 
 class ConfigAttributes(StrEnum) :
@@ -40,7 +38,7 @@ class ConfigAttributes(StrEnum) :
     DEPENDENCY_SOURCE_DEPENDENCY = "source"
     DEPENDENCY_SOURCE_PATH = "source_path"
     DEPENDENCY_TARGET_RELATIVE_ROOT = "target_relative_root"
-    DEPENDENCY_ALWAYS_REFRESH = "always_refresh"
+    DEPENDENCY_ALWAYS_UPDATE = "always_update"
 
     RESOLVE_ACTION = "resolve_action"
     RESOLVE_COPY = "copy"

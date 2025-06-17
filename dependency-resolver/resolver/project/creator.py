@@ -87,7 +87,8 @@ class Creator :
         sourcePath:str = helpers.getKey(dependency, ConfigAttributes.DEPENDENCY_SOURCE_PATH)
         action:ResolveAction = ResolveAction.determine(helpers.getKey(dependency, ConfigAttributes.RESOLVE_ACTION))
         description:str = helpers.getKey(dependency, ConfigAttributes.DEPENDENCY_DESCRIPTION)
-        return Dependency(name=name, targetDir=targetDir, targetName=targetName, targetRelativeRoot=targetRelativeRoot, source=source, sourcePath=sourcePath, resolveAction=action, description=description)
+        alwaysUpdate:bool = helpers.getKey(dependency, ConfigAttributes.DEPENDENCY_ALWAYS_UPDATE)
+        return Dependency(name=name, targetDir=targetDir, targetName=targetName, targetRelativeRoot=targetRelativeRoot, source=source, sourcePath=sourcePath, resolveAction=action, description=description, alwaysUpdate=alwaysUpdate)
 
 
     # Returns the Configuration as given
