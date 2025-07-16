@@ -4,11 +4,11 @@ import argparse
 import logging
 import traceback
 from typing import Optional
-import constants
-from resolver.utilities import file_util, helpers, log_util
-from resolver.configuration.configuration import Configuration
-from resolver.project.project import Project
-from resolver.cache.cache import Cache
+from . import constants
+from .resolver.utilities import file_util, helpers, log_util
+from .resolver.configuration.configuration import Configuration
+from .resolver.project.project import Project
+from .resolver.cache.cache import Cache
 
 _logger = logging.getLogger(__name__)
 
@@ -152,11 +152,19 @@ def _createCache(args:argparse.Namespace) -> Cache :
     if args :
         return Cache(cacheRoot=args.cacheRoot)
 
-# the entry point
-try :
-    if __name__ == "__main__" :
+
+def main() -> None:
+    """
+    The main entry point for the dependency resolver.
+    """
+    try:
         _init()
         _commandRunner()
-except Exception :
-    _logger.error(f"Command caught the exception (may not be harmful): {traceback.format_exc()}")
-    raise
+    except Exception:
+        _logger.error(f"Command caught the exception (may not be harmful): {traceback.format_exc()}")
+        raise
+
+
+# the entry point
+if __name__ == "__main__" :
+    main()
