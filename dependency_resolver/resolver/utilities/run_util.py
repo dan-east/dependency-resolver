@@ -35,11 +35,6 @@ def runExternal(command:str, verifySuccess:bool = True) -> str :
     return result.stdout
 
 
-# Runs an external command.
-#  Parameters:
-#   args - the command split up into individual parts.
-#  Returns the (standard) output of the command.
-#  Throws an subprocess.CalledProcessError if there is an error (failure exit code).
 def runExternalArgs(parameters:list[Any], verifySuccess:bool = True) -> str :
     """
     Runs an external command with the given parameters.

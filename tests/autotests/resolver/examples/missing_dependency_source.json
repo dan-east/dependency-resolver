@@ -1,0 +1,40 @@
+{
+    "version" : 1.0,
+    "project" : "MyProject",
+        
+    "dependencies" :
+    [
+        {
+            "name" : "Download_Latest_Version",
+            "description" : "The latest version of myThing app.",
+            "target_dir" : "/put/latest/here",
+            "target_name" : "myThing.app"
+        },
+        {
+            "name" : "Unzip_Useful_Stuff",
+            "description" : "A useful zip file that contains some stuff that is useful.",
+            "target_dir" : "/useful/stuff/",
+            "source" : "myfiles",
+            "source_path" : "this/zip/useful.zip",
+            "resolve_action" : "unzip"
+        }
+    ],
+    "sources" :
+    [
+        {
+            "name" : "internal",
+            "protocol" : "filesystem",
+            "type" : "project"
+        },
+        {
+            "name" : "latest",
+            "protocol" : "https",
+            "base" : "https://downloads.example.com/latest/myThing_5_13_5_linux64.app"
+        },       
+        {
+            "name" : "myfiles",
+            "protocol" : "https",
+            "base" : "https://downloads.example.com/stuff"
+        }
+    ]
+}
