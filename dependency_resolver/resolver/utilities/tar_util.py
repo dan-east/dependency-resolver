@@ -2,7 +2,7 @@ import logging
 import tarfile
 from tarfile import TarFile
 from . import file_util
-from .errors_util import TarError
+from .errors_util import UtilityError
 
 _logger = logging.getLogger(__name__)
 
@@ -74,3 +74,7 @@ def _validateTargetDirectory(targetDir:str) :
 
 def _createTarFile(path:str, mode:str = 'r') -> TarFile :
     return tarfile.open(path, mode=mode)  # type: ignore - mode as a string is valid for tarfile.open
+
+
+class TarError(UtilityError) :
+    """Raised by the zip utility functions to indicate some issue."""

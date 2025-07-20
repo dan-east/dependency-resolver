@@ -90,3 +90,16 @@ def getKey(config:dict, key) -> Any :
         return None
     else :
         return config[key]
+    
+    
+def isValidUrl(url:str) -> bool:
+    """
+    Simply tests a string to see if it is a valid URL (starts with http).
+
+    Args:
+        url (str): The string to test.
+
+    Returns:
+        bool: True if the string is a valid URL, otherwise False.
+    """
+    return hasValue(url) and url.startswith("http")

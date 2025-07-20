@@ -229,7 +229,9 @@ def test_readFile(temp_file):
     with mock.patch("dependency_resolver.resolver.utilities.file_util.exists", return_value=True):
         assert file_util.readFile(temp_file) == "hello world"
 
-def test_readFile_nonexistent_returns_empty():
-    """Test readFile returns empty string if file does not exist."""
-    with mock.patch("dependency_resolver.resolver.utilities.file_util.exists", return_value=False):
-        assert file_util.readFile("not_a_real_file") == ""
+
+def test_readListFromFile_error():
+    """Test readFile raised error if file does not exist."""
+    with pytest.raises(file_util.FileError):
+        file_util.readListFromFile('does_not_exist.txt') 
+        

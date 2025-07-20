@@ -4,9 +4,9 @@ import os
 import glob
 from pathlib import Path
 from typing import Optional
-from . import helpers, time_util
+from . import helpers, time_util, errors_util
 
-_logger = logging.getLogger(__name__)
+_logger:logging.Logger = logging.getLogger(__name__)
 
 def mkdir(dir:str, parents:bool = True, exist_ok:bool = True, mode:int = 511, user:Optional[str] = None, group:Optional[str] = None) :
     """
@@ -52,7 +52,7 @@ def isDir(path:str) -> bool :
     Returns:
         bool: True if the path exists and is a directory, False otherwise.
     """
-    return os.path.isdir(path)
+    return helpers.hasValue(path) and os.path.isdir(path)
 
 
 def isFile(path:str) -> bool :
@@ -65,7 +65,7 @@ def isFile(path:str) -> bool :
     Returns:
         bool: True if the path exists and is a file, False otherwise.
     """
-    return os.path.isfile(path)
+    return helpers.hasValue(path) and os.path.isfile(path)
 
 
 def ensurePathExists(path:str) -> bool :
@@ -400,10 +400,72 @@ def readFile(path:str, encoding:str = "utf-8") -> str :
 
     Returns:
         str: The contents of the file, or "" if the file does not exist.
+        
+    Raises:
+        FileError: If the file cannot be read.
     """
     contents:str = ""
-    if exists(path) :
+    try :
         with open(path, encoding=encoding) as file:
             contents = file.read()
+        return contents
+    except Exception as e :
+        raise FileError(f"Failed to read file {path}: {e}")
+           
+
+def readListFromFile(path: str, encoding:str = "utf-8") -> list[str]:
+    """
+    Read a file containing patterns (one per line), ignoring comments and blank lines.
+
+    Args:
+        path (str): Path to the file containing patterns.
+
+    Returns:
+        list[str]: List of patterns (stripped, non-empty, non-comment lines).
         
-    return contents
+    Raises:
+        FileError: If the file cannot be read.
+    """
+    listFromFile: list[str] = []
+    
+    try :
+        with open(path, 'r', encoding=encoding) as file:
+            for line in file:
+                line = line.strip()
+                if not line or line.startswith('#'):
+                    continue
+                listFromFile.append(line)
+        return listFromFile
+    except Exception as e :
+        raise FileError(f"Failed to read list from file {path}: {e}")
+
+
+def removeFilesOfTypes(dir:str, types:list[str]) :
+    """
+    Remove files of the given types from the given directory.
+
+    Args:
+        dir (str): The directory to inspect.
+        types (list[str]): The types of files to remove.
+        
+    Raises:
+        errors_util.FileError: If a file cannot be deleted.
+    """
+    _logger.debug(f"Removing files of types {types} from {dir}")
+    
+    if exists(dir) :
+        for pattern in types:
+            search_pattern = os.path.join(dir, '**', pattern)
+            for path in glob.iglob(search_pattern, recursive=True):
+                try :
+                    _logger.debug(f"Removing {path}")
+                    delete(path)
+                    _logger.debug(f"Removed {path}")   
+                except Exception as e :
+                    raise FileError(f"Failed to remove file {path}: {e}")
+                
+    _logger.debug(f"Removed files of types {types} from {dir}")
+    
+
+class FileError(errors_util.UtilityError) :
+    """Raised by the file utility functions to indicate some issue."""

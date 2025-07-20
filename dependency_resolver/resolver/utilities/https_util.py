@@ -1,6 +1,6 @@
 import logging
 import requests
-from .errors_util import HttpError
+from .errors_util import UtilityError
 
 _logger = logging.getLogger(__name__)
 
@@ -10,7 +10,7 @@ def download(source:str, target:str, chunks:int = 1024*1024*50) :
     Parameters:
         source - Full absolute URL to the source
         target - Full absolute path to the destination file (note existing file will be truncated if it exists)
-        chunks - Response is streamed in chunkes to avoid memory issues (number of bytes). 50MB by default.
+        chunks - Response is streamed in chunks to avoid memory issues (number of bytes). 50MB by default.
     Raises:
         errors.HTTPError if it fails to download.
     """
@@ -34,3 +34,7 @@ def download(source:str, target:str, chunks:int = 1024*1024*50) :
     except requests.RequestException as error :
         _logger.error(f"Failed to fetch {source}. There was an issue with the request: {error}")
         raise HttpError(f"Failed to fetch {source}. There was an issue with the request: {error}") from error
+
+
+class HttpError(UtilityError) :
+    """Raised by the zip utility functions to indicate some issue."""
