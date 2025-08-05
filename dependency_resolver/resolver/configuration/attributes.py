@@ -1,7 +1,7 @@
 try :
-    from strenum import StrEnum # for Python versions pre 3.11
+    from strenum import StrEnum  # for Python versions pre 3.11
 except ImportError :
-    from enum import StrEnum  # for Python versions 3.11+
+    from enum import StrEnum   # for Python versions 3.11+
 
 class ConfigAttributes(StrEnum) :
     # top level
@@ -11,7 +11,7 @@ class ConfigAttributes(StrEnum) :
     # config
     TARGET_ROOT:str = "target_root"
     CACHE_ROOT:str = "cache_root"
-    
+
     # sources
     SOURCES:str = "sources"
     SOURCE_NAME:str = "name"

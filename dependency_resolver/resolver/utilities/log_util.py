@@ -3,11 +3,10 @@ import logging.handlers
 import sys
 import os.path
 
-# Logging
-_logger:logging.Logger = logging.getLogger(__name__) # module name
+
+_logger:logging.Logger = logging.getLogger(__name__)
 
 
-# Call once to set up logging.
 def setupRootLogging(logToFile:str):
     """
     Sets up the root logger to log to both stdout and a file.

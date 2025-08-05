@@ -4,7 +4,9 @@ from tarfile import TarFile
 from . import file_util
 from .errors_util import UtilityError
 
+
 _logger:logging.Logger = logging.getLogger(__name__)
+
 
 def untar(tarPath:str, targetDir:str) :
     """
@@ -46,8 +48,16 @@ def isValidTarPath(tarPath:str) -> bool :
         return False
 
 
-# Checks to see if the path is actually a tar file.
 def _validateTarPath(tarPath:str) :
+    """
+    Validates the specified tar file path.
+
+    Args:
+        tarPath (str): the path to the tar file to validate.
+
+    Raises:
+        TarError: if the path is not specified, does not exist, or is not a valid tar file.
+    """
     if tarPath :
         if file_util.exists(tarPath) :
             if not tarfile.is_tarfile(tarPath) :
@@ -63,6 +73,15 @@ def _validateTarPath(tarPath:str) :
 
 # Checks to see it the target directory is valid
 def _validateTargetDirectory(targetDir:str) :
+    """
+    Validates the specified target directory.
+
+    Args:
+        targetDir (str): the target directory to validate.
+
+    Raises:
+        TarError: if the target directory is not specified or is not a directory.
+    """
     if targetDir :
         if file_util.exists(targetDir) and not file_util.isDir(targetDir) :
             _logger.error(f"The target directory {targetDir} is actually a file (at least its not a directory).")
@@ -70,7 +89,7 @@ def _validateTargetDirectory(targetDir:str) :
     else :
         _logger.error("The target directory has not been specified.")
         raise TarError("The target directory has not been specified.")
-    
+
 
 def _createTarFile(path:str, mode:str = 'r') -> TarFile :
     return tarfile.open(path, mode=mode)  # type: ignore - mode as a string is valid for tarfile.open

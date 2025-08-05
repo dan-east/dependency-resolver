@@ -2,7 +2,7 @@ import signal
 import time
 import logging
 
-_logger:logging.Logger = logging.getLogger(__name__) # module name
+_logger:logging.Logger = logging.getLogger(__name__)  # module name
 
 def keepAlive(sleep:int = 5) :
     """

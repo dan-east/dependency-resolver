@@ -1,20 +1,23 @@
 import logging
 from enum import Enum
-from ..utilities import helpers, file_util, zip_util, tar_util, errors_util
+from ..utilities import helpers, file_util, zip_util, tar_util
 from ..configuration.attributes import ConfigAttributes
 from ..errors.errors import ResolveError
 
 _logger:logging.Logger = logging.getLogger(__name__)
+
 
 class ResolveAction(Enum) :
     COPY = ConfigAttributes.RESOLVE_COPY 
     UNZIP = ConfigAttributes.RESOLVE_UNZIP
     UNTAR = ConfigAttributes.RESOLVE_UNTAR
 
+
     def __init__(self, value) :
         self._value_ = value
-  
-    @staticmethod # conceivably could be a @classmethod.
+
+
+    @staticmethod
     def determine(type: str) :
         """
         Construct a ResolveAction enum from a string representation.
@@ -34,13 +37,13 @@ class ResolveAction(Enum) :
             case ConfigAttributes.RESOLVE_UNTAR :
                 return ResolveAction.UNTAR
             case _ :
-                return ResolveAction.COPY # if its unknown then lets assume copy
+                return ResolveAction.COPY  # if its unknown then lets assume copy
 
-            
+
     def resolve(self, sourcePath:str, destinationDir:str) :
         """
         Resolve the specified sourcePath file as appropriate for this action, e.g. copy to destination dir or unzip to destination dir.
-    
+
         Parameters:
             source - the absolute location of the source file
             destinationDir - the absolute directory to put this source file.
@@ -63,11 +66,13 @@ class ResolveAction(Enum) :
         if not file_util.copy(sourcePath, destinationDir) :
             raise ResolveError(f"Failed to copy {sourcePath} -> {destinationDir}.")
 
+
     def _unzip(self, sourcePath:str, destinationDir:str) :
         try :
             zip_util.unzip(sourcePath, destinationDir)
         except zip_util.ZipError as zipError :
             raise ResolveError(f"Failed to unzip {sourcePath} -> {destinationDir}") from zipError
+
 
     def _untar(self, sourcePath:str, destinationDir:str) :
         try :

@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 
+
 def getCurrentDateTimeString(format:str = "%d/%m/%Y %H:%M:%S") :
     """
     Returns the current date and time as a formatted string.

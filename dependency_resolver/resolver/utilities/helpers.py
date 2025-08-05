@@ -89,8 +89,8 @@ def getKey(config:dict, key) -> Any :
         return None
     else :
         return config[key]
-    
-    
+
+
 def isValidUrl(url:str) -> bool:
     """
     Simply tests a string to see if it is a valid URL (starts with http).

@@ -4,6 +4,7 @@ from .errors_util import UtilityError
 
 _logger:logging.Logger = logging.getLogger(__name__)
 
+
 def download(source:str, target:str, chunks:int = 1024*1024*50) :
     """
     Streams the specified source url into a target file.

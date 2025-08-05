@@ -39,6 +39,7 @@ def _printConfig(subparsers) :
     runner.add_argument("--configPath", "-c", help='The path to the configuration file', required=True)
     runner.set_defaults(func=_printCommand)
 
+
 def _printCommand(args:argparse.Namespace) :
     _createConfiguration(args).printConfiguration()
 
@@ -48,6 +49,7 @@ def _validateConfig(subparsers) :
     runner = subparsers.add_parser("validate_config", help="Validate (find any missing required attributes) in the target JSON configuration.", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     runner.add_argument("--configPath", "-c", help='The path to the configuration file', required=True)
     runner.set_defaults(func=_validateCommand)
+
 
 def _validateCommand(args:argparse.Namespace) :
     _createConfiguration(args).validateConfiguration()
@@ -61,6 +63,7 @@ def _printDependencyTargetPath(subparsers) :
     runner.add_argument("--cacheRoot", "-R", help='The root of the cache to use for the downloads.', default=constants.CACHE_DIR, required=False)
     runner.set_defaults(func=_printDependencyTargetPathCommand)
 
+
 def _printDependencyTargetPathCommand(args:argparse.Namespace) :
     _createProject(args).printDependencyTarget(name=args.name)
 
@@ -73,6 +76,7 @@ def _updateSourceCache(subparsers) :
     runner.add_argument("--configPath", "-c", help='The path to the configuration file', required=True)
     runner.add_argument("--cacheRoot", "-R", help='The root of the cache to use for the downloads.', default=constants.CACHE_DIR, required=False)
     runner.set_defaults(func=_updateSourceCacheCommand)
+
 
 def _updateSourceCacheCommand(args:argparse.Namespace) :
     project:Project = _createProject(args)
@@ -91,6 +95,7 @@ def _resolveFromCacheDependencies(subparsers) :
     runner.add_argument("--cacheRoot", "-R", help='The root of the cache to use for the downloads.', default=constants.CACHE_DIR, required=False)
     runner.set_defaults(func=_resolveFromCacheDependenciesCommand)
 
+
 def _resolveFromCacheDependenciesCommand(args:argparse.Namespace) :
     _createProject(args).resolveFetchedDependencies()
 
@@ -104,6 +109,7 @@ def _resolveDependencies(subparsers) :
     runner.add_argument("--cacheRoot", "-R", help='The root of the cache to use for the downloads.', default=constants.CACHE_DIR, required=False)
     runner.set_defaults(func=_resolveDependenciesCommand)
 
+
 def _resolveDependenciesCommand(args:argparse.Namespace) :
     _createProject(args).resolveDependencies(alwaysFetch=args.force)
 
@@ -114,7 +120,7 @@ def _clean(project:Optional[Project]) :
     _logger.debug("Cleaned log file")
     if project is not None :
         project.clean()
-        
+
 
 # Empties the existing contents of the log file.
 #  Helpful when testing.
@@ -127,7 +133,7 @@ def _createConfiguration(args:argparse.Namespace) -> Configuration :
     if args and helpers.hasValue(args.configPath) :
         return Configuration(configurationPath=args.configPath)
 
-    return Configuration("config.json") # todo - allow some default.
+    return Configuration("config.json")  # todo - allow some default.
 
 
 # Creates and checks the config for errors.
@@ -138,7 +144,7 @@ def _loadConfiguration(args:argparse.Namespace) -> Configuration :
         print(message)
         _logger.error(message)
         exit(1)
-    
+
     return config
 
 

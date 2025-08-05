@@ -11,22 +11,30 @@ class Configuration :
         self._configPath:str = configurationPath
         self._loadConfiguration()
 
-    # Load the configuration 
+
     def _loadConfiguration(self) :
+        """
+        Loads the configuration from the specified path.
+        """
         if file_util.isFile(self._getConfigurationPath()) :
             self._config:dict = json_util.parseFromFile(self._getConfigurationPath())
             helpers.assertSet(_logger, f"Unable to load the JSON representation in the path {self._getConfigurationPath()}", self.getConfiguration()) # make sure we managed to open the configuration
             _logger.debug(f"Loaded configuration: {self.getConfiguration()}")
         else :
             _logger.debug(f"Cannot load configuration - file doesn't exist at {self._getConfigurationPath()}")
-            exit(1) # a terminal condition.
+            exit(1)  # a terminal condition.
 
 
-    # Returns the loaded configuration path
     def _getConfigurationPath(self) -> str :
+        """
+        Returns the path to the configuration file.
+
+        Returns:
+            str: the path to the configuration file.
+        """
         return self._configPath
 
-    
+
     def getConfigurationHome(self) -> str :
         """
         Returns the path to the directory the configuration file was loaded from. All dependency targets are relative to this directory.
@@ -46,7 +54,7 @@ class Configuration :
         """
         return self._config
 
-                
+
     def printConfiguration(self) :
         """
         Prints the loaded configuration in a human-readable format.
@@ -79,8 +87,13 @@ class Configuration :
         return len(self._findAnyConfigErrors())
 
 
-    # Finds any errors (required attributes that are missing) in the configuration and returns a list of them.
     def _findAnyConfigErrors(self) -> list[str] :
+        """
+        Finds any errors (required attributes that are missing) in the configuration and returns a list of them.
+
+        Returns:
+            list[str]: A list of error messages for any missing required attributes in the configuration.
+        """
         config:dict = self.getConfiguration()
         errors:list[str] = []
         self._validateProjectName(config, errors)
@@ -89,13 +102,25 @@ class Configuration :
         return errors
 
 
-    # Adds any errors to a list of previous errors.    
     def _validateProjectName(self, config:dict, errors:list[str]) :
+        """
+        Validates the project name in the configuration.
+
+        Args:
+            config (dict): the configuration dictionary.
+            errors (list[str]): a list to append any error messages to.
+        """
         helpers.addIfNotNone(errors, self._doesKeyExist(config, ConfigAttributes.PROJECT_NAME, False))
 
         
-    # Adds any sources errors to a list of previous errors.    
     def _validateSources(self, config:dict, errors:list[str]) :
+        """
+        Validates the sources in the configuration.
+
+        Args:
+            config (dict): the configuration dictionary.
+            errors (list[str]): a list to append any error messages to.
+        """
         key:str = ConfigAttributes.SOURCES
         error:str|None = self._doesKeyExist(config, key, False)
         if error :
@@ -104,15 +129,28 @@ class Configuration :
             for source in config.get(key, []) :
                 self._validateSource(source, errors)
 
-        
-    # Adds any errors found in the source to a list of previous errors.
+
     def _validateSource(self, source:dict, errors:list[str]) :
+        """
+        Validates a single source in the configuration.
+
+        Args:
+            source (dict): the source dictionary to validate.
+            errors (list[str]): a list to append any error messages to.
+        """
         helpers.addIfNotNone(errors, self._doesKeyExist(source, ConfigAttributes.SOURCE_NAME))
         helpers.addIfNotNone(errors, self._doesKeyExist(source, ConfigAttributes.SOURCE_PROTOCOL))
 
-                             
-    # Adds any sources errors to  a list of previous errors.    
+
     def _validateDependencies(self, config:dict, errors:list[str]) :
+        """
+        Validates the dependencies in the configuration.
+        Adds any sources errors to  a list of previous errors.
+
+        Args:
+            config (dict): the configuration dictionary.
+            errors (list[str]): a list to append any error messages to.
+        """
         key:str = ConfigAttributes.DEPENDENCIES
         error:str|None = self._doesKeyExist(config, key, False)
         if error :
@@ -121,18 +159,36 @@ class Configuration :
             for dependency in config.get(key, []) :
                 self._validateDependency(dependency, errors)
 
-        
-    # Adds any errors found in the source to a list of previous errors.
+
     def _validateDependency(self, dependency:dict, errors:list[str]) :
+        """
+        Validates a single dependency in the configuration.
+        Adds any errors found in the dependency to a list of previous errors.
+
+        Args:
+            dependency (dict): the dependency dictionary to validate.
+            errors (list[str]): a list to append any error messages to.
+        """
         helpers.addIfNotNone(errors, self._doesKeyExist(dependency, ConfigAttributes.DEPENDENCY_NAME))
         helpers.addIfNotNone(errors, self._doesKeyExist(dependency, ConfigAttributes.DEPENDENCY_TARGET_DIR))
         helpers.addIfNotNone(errors, self._doesKeyExist(dependency, ConfigAttributes.DEPENDENCY_SOURCE_DEPENDENCY))
 
 
     # Checks to see if a key has been specified in the config. Returns an error message if missing/empty.
-    def _doesKeyExist(self, config:dict, key, context:bool = True) -> Optional[str] :
+    def _doesKeyExist(self, config:dict, key:str, add_context:bool = True) -> Optional[str] :
+        """
+        Checks if a key exists in the configuration dictionary and is not empty.
+
+        Args:
+            config (dict): the configuration dictionary to check.
+            key (str): the key to check for in the configuration.
+            add_context (bool, optional): In the case of an error, add additional information. Defaults to True.
+
+        Returns:
+            Optional[str]: An error message if the key is missing or empty, otherwise None.
+        """
         if key not in config or not config[key] :
             error:str = f"Required attribute {key} is not specified or is empty."
-            if context :
+            if add_context :
                 error=f"{error} In: {config}."
             return error

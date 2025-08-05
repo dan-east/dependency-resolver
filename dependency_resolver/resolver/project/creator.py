@@ -37,13 +37,20 @@ class Creator :
         return sources
 
 
-    # Create Sources
     def _createSources(self) -> Sources :
         return Sources()
 
 
-    # Create an individual Source
     def _createSource(self, source:dict) -> Source :
+        """
+        Create a Source object from the given source dictionary.
+
+        Args:
+            source (dict): The source dictionary containing attributes like name, protocol, base, type, and description.
+
+        Returns:
+            Source: An instance of Source created from the provided attributes.
+        """
         name:str = helpers.getKey(source, ConfigAttributes.SOURCE_NAME)
         protocol:SourceProtocol = SourceProtocol.determine(helpers.getKey(source, ConfigAttributes.SOURCE_PROTOCOL))
         base:str = helpers.getKey(source, ConfigAttributes.SOURCE_BASE)
@@ -72,13 +79,22 @@ class Creator :
         return dependencies
 
 
-    # Create Dependencies
     def _createDependencies(self) -> Dependencies :
         return Dependencies()
 
 
     # Create an individual dependency
     def _createDependency(self, dependency:dict, sources:Sources) -> Dependency :
+        """
+        Create a Dependency object from the given dependency dictionary.
+
+        Args:
+            dependency (dict): The dependency dictionary containing attributes like name, targetDir, targetName, targetRelativeRoot, source, sourcePath, resolveAction, description, and alwaysUpdate.
+            sources (Sources): An instance of Sources to resolve the source dependency.
+
+        Returns:
+            Dependency: An instance of Dependency created from the provided attributes.
+        """
         name:str = helpers.getKey(dependency, ConfigAttributes.DEPENDENCY_NAME)
         targetDir:str = helpers.getKey(dependency, ConfigAttributes.DEPENDENCY_TARGET_DIR)
         targetName:str = helpers.getKey(dependency, ConfigAttributes.DEPENDENCY_TARGET_NAME)
@@ -91,10 +107,21 @@ class Creator :
         return Dependency(name=name, targetDir=targetDir, targetName=targetName, targetRelativeRoot=targetRelativeRoot, source=source, sourcePath=sourcePath, resolveAction=action, description=description, alwaysUpdate=alwaysUpdate)
 
 
-    # Returns the Configuration as given
     def _getConfiguration(self) -> Configuration :
+        """
+        Returns the Configuration object that this Creator was initialized with.
+
+        Returns:
+            Configuration: The Configuration object containing the project and dependencies configuration.
+        """
         return self._config
-    
-    # Returns the underlying configuration dict
+
+
     def _getConfig(self) -> dict :
+        """
+        Returns the underlying configuration dictionary.
+
+        Returns:
+            dict: The configuration dictionary containing all the project and dependencies settings.
+        """
         return self._getConfiguration().getConfiguration()

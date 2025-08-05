@@ -1,11 +1,8 @@
-import logging
 from enum import Enum
 from ..utilities import helpers
 
-# Logging
-_logger = logging.getLogger(__name__) # module name
 
-# is the source path relative to something or an absolute path? 
+# Is the source path relative to something or an absolute path? 
 # The default for a source is ABSOLUTE.
 class SourceType(Enum) :
     ABSOLUTE = 1
@@ -15,7 +12,7 @@ class SourceType(Enum) :
     def determine(type: str) :
         if helpers.isEmpty(type) :
             return SourceType.ABSOLUTE
-        
+
         match type.lower() :
             case "absolute" :
                 return SourceType.ABSOLUTE
@@ -23,4 +20,3 @@ class SourceType(Enum) :
                 return SourceType.RELATIVE_PROJECT
             case _ :
                 return SourceType.ABSOLUTE
-    

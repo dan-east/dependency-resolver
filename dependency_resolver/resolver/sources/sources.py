@@ -1,13 +1,10 @@
-import logging
 from .source import Source 
 
-# Logging
-_logger = logging.getLogger(__name__) # module name
-
 class Sources :
-    
+
     def __init__(self) :
         self._sources:dict = {}
+
 
     def addSource(self, name:str, source:Source) :
         """
@@ -31,8 +28,8 @@ class Sources :
             Source: The source object associated with the given name.
         """
         return self._sources[name]
-        
-    
+
+
     def getAllSourceName(self) -> list[str]:
         """
         Returns a list of all source names.

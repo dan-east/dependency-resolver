@@ -8,6 +8,7 @@ from . import helpers, time_util, errors_util
 
 _logger:logging.Logger = logging.getLogger(__name__)
 
+
 def mkdir(dir:str, parents:bool = True, exist_ok:bool = True, mode:int = 511, user:Optional[str] = None, group:Optional[str] = None) :
     """
     Create a directory (and parent structure if required) if it doesn't already exist.
@@ -164,7 +165,7 @@ def copy(source:str, dest:str, sourceDirectoryContentsOnly:Optional[bool]=False)
                 if sourceDirectoryContentsOnly :
                     return copyContents(source, dest)
                 else :
-                    _logger.debug("Copying directory from " + source + " -> " + dest)
+                    _logger.debug(f"Copying directory from {source} -> {dest}")
                     return helpers.hasValue(shutil.copytree(source, dest, dirs_exist_ok=True))
             else :
                 _logger.debug("Copying " + source + " -> " + dest)
@@ -411,7 +412,7 @@ def readFile(path:str, encoding:str = "utf-8") -> str :
         return contents
     except Exception as e :
         raise FileError(f"Failed to read file {path}: {e}")
-           
+
 
 def readListFromFile(path: str, encoding:str = "utf-8") -> list[str]:
     """
@@ -452,7 +453,7 @@ def removeFilesOfTypes(dir:str, types:list[str]) :
         errors_util.FileError: If a file cannot be deleted.
     """
     _logger.debug(f"Removing files of types {types} from {dir}")
-    
+
     if exists(dir) :
         for pattern in types:
             search_pattern = os.path.join(dir, '**', pattern)
@@ -465,7 +466,7 @@ def removeFilesOfTypes(dir:str, types:list[str]) :
                     raise FileError(f"Failed to remove file {path}: {e}")
                 
     _logger.debug(f"Removed files of types {types} from {dir}")
-    
+
 
 class FileError(errors_util.UtilityError) :
     """Raised by the file utility functions to indicate some issue."""

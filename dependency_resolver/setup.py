@@ -32,7 +32,7 @@ def _installRequiredPackages(subparsers) :
     """
     runner = subparsers.add_parser("install_python_dependencies", help="Install any extra non-default python library dependencies using pip.")
     runner.set_defaults(func=_installRequiredPackagesCommand)
-    
+
 
 def _installRequiredPackagesCommand(args:Sequence[str]) :
     # StrEnum is available by default in python version >=3.11 onwards.
@@ -48,4 +48,3 @@ try :
 except Exception :
     _logger.error(f"Command caught the exception (may not be harmful): {traceback.format_exc()}")
     raise
-   

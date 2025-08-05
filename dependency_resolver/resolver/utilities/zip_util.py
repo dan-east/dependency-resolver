@@ -5,7 +5,9 @@ from zipfile import ZipFile
 from . import file_util
 from .errors_util import UtilityError
 
+
 _logger:logging.Logger = logging.getLogger(__name__)
+
 
 def zip(sourceDir:str, zipDir:str, zipName:str) -> str :
     """
@@ -23,7 +25,7 @@ def zip(sourceDir:str, zipDir:str, zipName:str) -> str :
         ZipError: If an error is encountered.
     """
     _logger.debug(f"Zipping {sourceDir} -> {zipDir}/{zipName}")
-    
+
     # Validate the source and target directories
     _validateSourceDirectory(sourceDir)
     _validateTargetDirectory(zipDir)
@@ -36,7 +38,7 @@ def zip(sourceDir:str, zipDir:str, zipName:str) -> str :
 
     # Convert to Path object
     dir:Path = Path(sourceDir)
-    
+
     # Zip the directory
     try :
         with _createZipFileForWrite(zip_path) as zip_file:
@@ -64,11 +66,11 @@ def unzip(zipPath:str, targetDir:str) :
         ZipError if an error is encountered.
     """
     _logger.debug(f"Unzipping {zipPath} -> {targetDir}")
-    
+
     # Validate the zip file and target directory
     _validateZipPath(zipPath)
     _validateTargetDirectory(targetDir)
-    
+
     # Make the target directory in case it doesn't exist.
     file_util.mkdir(targetDir, mode=0o744) # make target directory in case it doesn't exist.
     try :
@@ -79,8 +81,8 @@ def unzip(zipPath:str, targetDir:str) :
         raise ZipError(f"Unable to extract zip file at {zipPath}") from exc
 
     _logger.debug(f"Unzipped {zipPath} -> {targetDir}")
-    
-    
+
+
 def isValidZipPath(zipPath:str) -> bool :
     """
     Returns true if the file at the specified path is a zip file.
@@ -98,8 +100,16 @@ def isValidZipPath(zipPath:str) -> bool :
         return False
 
 
-# Checks to see if the path is actually a zip file.
 def _validateZipPath(zipPath:str) :
+    """
+    Validates the specified zip file path.
+
+    Args:
+        zipPath (str): the path to the zip file to validate.
+
+    Raises:
+        ZipError: if the path is not specified, does not exist, or is not a valid zip file.
+    """
     if zipPath :
         if file_util.exists(zipPath) :
             if not zipfile.is_zipfile(zipPath) :
@@ -113,8 +123,16 @@ def _validateZipPath(zipPath:str) :
         raise ZipError("Path to the zip file has not been specified.")
 
 
-# Checks to see it the target directory is valid (i.e. it exists and is a directory)
 def _validateTargetDirectory(targetDir:str) :
+    """
+    Validates the specified target directory.
+
+    Args:
+        targetDir (str): the target directory to validate.
+
+    Raises:
+        ZipError: if the target directory is not specified or is not a directory.
+    """
     if targetDir :
         if file_util.exists(targetDir) and not file_util.isDir(targetDir) :
             _logger.error(f"The target directory {targetDir} is actually a file (at least its not a directory).")
@@ -124,8 +142,16 @@ def _validateTargetDirectory(targetDir:str) :
         raise ZipError("The target directory has not been specified.")
 
 
-# Checks to see it the source directory is valid (i.e. it exists and is a directory)
 def _validateSourceDirectory(sourceDir:str) :
+    """
+    Validates the specified source directory.
+
+    Args:
+        sourceDir (str): the source directory to validate.
+
+    Raises:
+        ZipError: if the source directory is not specified or does not exist, or is not a directory.
+    """
     if sourceDir :
         if file_util.exists(sourceDir) :
             if not file_util.isDir(sourceDir) :
@@ -141,6 +167,7 @@ def _validateSourceDirectory(sourceDir:str) :
 
 def _createZipFileForRead(path:str) -> ZipFile :
     return ZipFile(path, "r")
+
 
 def _createZipFileForWrite(path:str) -> ZipFile :
     return ZipFile(path, "w", zipfile.ZIP_DEFLATED)

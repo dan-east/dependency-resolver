@@ -5,8 +5,9 @@ from .type  import SourceType
 from ..configuration.attributes import ConfigAttributes
 from ..utilities import file_util, helpers
 
-# Logging
-_logger = logging.getLogger(__name__) # module name
+
+_logger = logging.getLogger(__name__)
+
 
 class Source :
 
@@ -26,8 +27,8 @@ class Source :
         self._setType(type)
         self._base:str = base if base is not None else ""
         self._description:str = description if description is not None else ""
-        
-  
+
+
     def fetch(self, sourcePath:str, targetDir:str, targetName:str) :
         """
         Fetches the source (file) and puts it in the specified directory.
@@ -37,7 +38,7 @@ class Source :
             sourcePath - the relative path to this source.
             targetDir - the absolute path to the directory to put this file.
             targetName - the file name to give this download.
-        
+
         Raises:
             FetchError if the fetch is unsuccessful.
         """
@@ -60,30 +61,65 @@ class Source :
             return self._getBase()
 
 
-    # Returns the sources protocol
     def _getProtocol(self) -> SourceProtocol :
+        """
+        Returns the protocol used to fetch this source.
+
+        Returns:
+            SourceProtocol: The protocol used to fetch this source.
+        """
         return self._protocol
-    
-    # Returns the name of this source
+
+
     def getName(self) -> str :
+        """
+        Returns the name of this source.
+
+        Returns:
+            str: The name of this source.
+        """
         return self._name
-    
-    # Returns the url/path base of this source
+
+
     def _getBase(self) -> str :
+        """
+        Returns the base path or URL of this source.
+
+        Returns:
+            str: The base path or URL of this source.
+        """
         return self._base
 
-    # Returns the description of this source
+
     def _getDescription(self) -> str :
+        """
+        Returns the description of this source.
+
+        Returns:
+            str: The description of this source.
+        """
         return self._description
-            
-    # Set the type of source path (absolute, relative)
+
+
     def _setType(self, type:Optional[SourceType]) :
+        """
+        Sets the type of this source. If not specified, defaults to SourceType.ABSOLUTE.
+
+        Args:
+            type (Optional[SourceType]): The type of this source. If None, defaults to SourceType.ABSOLUTE.
+        """
         if type is None :
             self._type = SourceType.ABSOLUTE
         else :
             self._type:SourceType = type
-        
-    # Returns the SourceType of this source
+
+
     def _getType(self) -> SourceType :
+        """
+        Returns the type of this source.
+
+        Returns:
+            SourceType: The type of this source.
+        """
         return self._type
 

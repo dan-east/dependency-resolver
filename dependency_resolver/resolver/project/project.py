@@ -12,6 +12,7 @@ from ..cache.cache import Cache
 
 _logger:logging.Logger = logging.getLogger(__name__)
 
+
 class Project :
     def __init__(self, configuration: Configuration) :
         """
@@ -24,7 +25,7 @@ class Project :
         """
         helpers.assertSet(_logger, "Configuration is not set", configuration)
         if configuration.numberOfErrors() > 0 :
-            print(f"There are syntax errors in the configuration. To view them run the validate_config command.")
+            print("There are syntax errors in the configuration. To view them run the validate_config command.")
             exit(1)
         self._config:Configuration = configuration
         self._creator:Creator = Creator(self._getConfiguration())
@@ -94,7 +95,7 @@ class Project :
             else :
                 print(f"{count}-{dependency.getName()} : Already fetched.")
         
-        _logger.debug(f"...fetched dependencies.")
+        _logger.debug("...fetched dependencies.")
 
 
     def _fetchDependency(self, dependency:Dependency, alwaysFetch:bool = False) :
@@ -134,7 +135,7 @@ class Project :
             except ResolveError as error:
                 print(f"{count}-{dependency.getName()} : Failed :: {error}.")
         
-        _logger.debug(f"...resolved dependencies.")
+        _logger.debug("...resolved dependencies.")
 
 
     def _resolveDependency(self, dependency:Dependency, onlyMissing:bool = False) :
@@ -164,7 +165,7 @@ class Project :
         _logger.debug(f"Fetching and resolving dependencies (force download = {alwaysFetch})")
         self.fetchDependencies(alwaysFetch)
         self.resolveFetchedDependencies(onlyMissing)
-        _logger.debug(f"...fetched and resolved dependencies.")
+        _logger.debug("...fetched and resolved dependencies.")
 
 
     def clean(self) :
@@ -185,39 +186,48 @@ class Project :
         self._sources:Sources = self._creator.createSources()
         self._dependencies:Dependencies = self._creator.createDependencies(self._getSources())
 
+
     def _parseProjectName(self, config:dict) :
         """Parses the name of this project from the configuration."""
         self._projectName:str = helpers.getKey(config, ConfigAttributes.PROJECT_NAME)
         helpers.assertSet(_logger, "Configuration must specify a Project name (attribute: project)", self.getProjectName())
 
+
     def _parseTargetRoot(self, config:dict) :
         """Parses the target root for this project from the configuration."""
         self._targetRoot:str = helpers.getKey(config, ConfigAttributes.TARGET_ROOT)
 
+
     def _getConfiguration(self) -> Configuration :
         """Returns the Configuration."""
         return self._config
+
     
     def _getTargetRoot(self) -> str :
         """Returns the target root. If not set then the configuration home is returned."""
         return self._targetRoot if self._targetRoot is not None else self._getConfiguration().getConfigurationHome()
+
       
     def _getSources(self) -> Sources :
         """Return all the Sources for this project."""
         return self._sources
+
     
     def _getDependencies(self) -> Dependencies :
         """Return all the dependencies for this project."""
         return self._dependencies
+
       
     def _getCache(self) :
         """Returns the cache."""
         helpers.assertSet(_logger, "_getCache:::Cache has not been configured - use setCache to set the cache for this project", self._cache)
         return self._cache
+
     
     def _addDownloaded(self, alreadyDownloaded:list[str], dependency:Dependency) :
         """Remember we have already downloaded this source target."""
         alreadyDownloaded.append(dependency.getAbsoluteSourcePath())
+
 
     def _hasBeenDownloaded(self, alreadyDownloaded:list[str],  dependency:Dependency) :
         """Checks to we if we have already downloaded this source target."""
