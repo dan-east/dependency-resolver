@@ -1,46 +1,43 @@
-import logging
 try :
     from strenum import StrEnum # for Python versions pre 3.11
 except ImportError :
     from enum import StrEnum  # for Python versions 3.11+
 
-_logger = logging.getLogger(__name__)
-
 class ConfigAttributes(StrEnum) :
     # top level
-    PROJECT_NAME = "project"
-    VERSION = "version"
+    PROJECT_NAME:str = "project"
+    VERSION:str = "version"
 
     # config
-    TARGET_ROOT = "target_root"
-    CACHE_ROOT = "cache_root"
+    TARGET_ROOT:str = "target_root"
+    CACHE_ROOT:str = "cache_root"
     
     # sources
-    SOURCES = "sources"
-    SOURCE_NAME = "name"
-    SOURCE_BASE = "base"
-    SOURCE_DESCRIPTION = "description"
+    SOURCES:str = "sources"
+    SOURCE_NAME:str = "name"
+    SOURCE_BASE:str = "base"
+    SOURCE_DESCRIPTION:str = "description"
 
-    SOURCE_PROTOCOL = "protocol"
-    PROTOCOL_HTTPS = "https"
-    PROTOCOL_FS = "filesystem"
+    SOURCE_PROTOCOL:str = "protocol"
+    PROTOCOL_HTTPS:str = "https"
+    PROTOCOL_FS:str = "filesystem"
 
-    SOURCE_TYPE = "type"
-    TYPE_ABSOLUTE = "absolute"
-    TYPE_PROJECT = "project"
+    SOURCE_TYPE:str = "type"
+    TYPE_ABSOLUTE:str = "absolute"
+    TYPE_PROJECT:str = "project"
 
     # dependencies
-    DEPENDENCIES = "dependencies"
-    DEPENDENCY_NAME = "name"
-    DEPENDENCY_DESCRIPTION = "description"
-    DEPENDENCY_TARGET_DIR = "target_dir"
-    DEPENDENCY_TARGET_NAME = "target_name"
-    DEPENDENCY_SOURCE_DEPENDENCY = "source"
-    DEPENDENCY_SOURCE_PATH = "source_path"
-    DEPENDENCY_TARGET_RELATIVE_ROOT = "target_relative_root"
-    DEPENDENCY_ALWAYS_UPDATE = "always_update"
+    DEPENDENCIES:str = "dependencies"
+    DEPENDENCY_NAME:str = "name"
+    DEPENDENCY_DESCRIPTION:str = "description"
+    DEPENDENCY_TARGET_DIR:str = "target_dir"
+    DEPENDENCY_TARGET_NAME:str = "target_name"
+    DEPENDENCY_SOURCE_DEPENDENCY:str = "source"
+    DEPENDENCY_SOURCE_PATH:str = "source_path"
+    DEPENDENCY_TARGET_RELATIVE_ROOT:str = "target_relative_root"
+    DEPENDENCY_ALWAYS_UPDATE:str = "always_update"
 
-    RESOLVE_ACTION = "resolve_action"
-    RESOLVE_COPY = "copy"
-    RESOLVE_UNZIP = "unzip"
-    RESOLVE_UNTAR = "untar"
+    RESOLVE_ACTION:str = "resolve_action"
+    RESOLVE_COPY:str = "copy"
+    RESOLVE_UNZIP:str = "unzip"
+    RESOLVE_UNTAR:str = "untar"

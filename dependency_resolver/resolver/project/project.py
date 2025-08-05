@@ -13,7 +13,7 @@ from ..cache.cache import Cache
 _logger = logging.getLogger(__name__)
 
 class Project :
-    def __init__(self, configuration: Configuration, cache:Cache) :
+    def __init__(self, configuration: Configuration) :
         """
         Construct the Project.
         This will parse the given configuration.
@@ -29,8 +29,20 @@ class Project :
         self._config:Configuration = configuration
         self._creator:Creator = Creator(self._getConfiguration())
         self._parseConfig()
-        self._setCache(cache)
-        
+
+
+    def getProjectName(self) -> str :
+        """Returns the name of this project."""
+        return self._projectName
+    
+
+    def setCache(self, cache:Cache) :
+        """
+        Sets the cache for this project.
+        The cache must be set before any dependencies are fetched or resolved.
+        """
+        self._cache:Cache = cache
+
 
     def printDependencyTarget(self, name:str) :
         """
@@ -60,6 +72,8 @@ class Project :
         Parameters:
             alwaysFetch - Fetch the dependency source even if they are already in the cache.
         """
+        helpers.assertSet(_logger, "fetchDependencies:::Cache has not been configured - use setCache to set the cache for this project", self._getCache())
+        
         _logger.debug(f"Fetching all dependencies (force download = {alwaysFetch})")
 
         # A map of dependencies already downloaded this fetch
@@ -105,6 +119,8 @@ class Project :
         Parameters:
             onlyMissing - Only resolve those sources that are missing at the target location. Note actions that are not file copies (e.g. unzipping) are always resolved.
         """
+        helpers.assertSet(_logger, "resolveFetchedDependencies:::Cache has not been configured - use setCache to set the cache for this project", self._getCache())
+        
         _logger.debug(f"Resolving all dependencies (only missing = {onlyMissing})")
 
         print(f"Resolving {len(self._getDependencies().getDependencies())} dependencies:")
@@ -143,6 +159,8 @@ class Project :
         Parameters:
             onlyMissing - Only resolve those sources that are missing at the target location. Note actions that are not file copies (e.g. unzipping) are always resolved.
         """
+        helpers.assertSet(_logger, "resolveDependencies:::Cache has not been configured - use setCache to set the cache for this project", self._getCache())
+        
         _logger.debug(f"Fetching and resolving dependencies (force download = {alwaysFetch})")
         self.fetchDependencies(alwaysFetch)
         self.resolveFetchedDependencies(onlyMissing)
@@ -154,9 +172,9 @@ class Project :
         Cleans the cache and logs for this project.
         This will delete the cache and log files.
         """
-        _logger.debug(f"Cleaning project {self._getProjectName()}")
+        _logger.debug(f"Cleaning project {self.getProjectName()}")
         self._getCache().clean()
-        _logger.debug(f"...cleaned project {self._getProjectName()}")
+        _logger.debug(f"...cleaned project {self.getProjectName()}")
         
 
     def _parseConfig(self) :
@@ -164,39 +182,26 @@ class Project :
         config:dict = self._getConfiguration().getConfiguration()
         self._parseProjectName(config)
         self._parseTargetRoot(config)
-        self._parseCacheRoot(config)
         self._sources:Sources = self._creator.createSources()
         self._dependencies:Dependencies = self._creator.createDependencies(self._getSources())
 
     def _parseProjectName(self, config:dict) :
         """Parses the name of this project from the configuration."""
         self._projectName:str = helpers.getKey(config, ConfigAttributes.PROJECT_NAME)
-        helpers.assertSet(_logger, "Configuration must specify a Project name (attribute: project)", self._getProjectName())
+        helpers.assertSet(_logger, "Configuration must specify a Project name (attribute: project)", self.getProjectName())
 
     def _parseTargetRoot(self, config:dict) :
         """Parses the target root for this project from the configuration."""
         self._targetRoot:str = helpers.getKey(config, ConfigAttributes.TARGET_ROOT)
 
-    def _parseCacheRoot(self, config:dict) :
-        """Parses the cache root for this project from the configuration."""
-        self._cacheRoot:str = helpers.getKey(config, ConfigAttributes.CACHE_ROOT)
-
     def _getConfiguration(self) -> Configuration :
         """Returns the Configuration."""
         return self._config
-  
-    def _getProjectName(self) -> str :
-        """Returns the name of this project."""
-        return self._projectName
     
     def _getTargetRoot(self) -> str :
         """Returns the target root. If not set then the configuration home is returned."""
         return self._targetRoot if self._targetRoot is not None else self._getConfiguration().getConfigurationHome()
-    
-    def _getCacheRoot(self) -> str :
-        """Returns this Project's cache root"""
-        return self._cacheRoot
-    
+      
     def _getSources(self) -> Sources :
         """Return all the Sources for this project."""
         return self._sources
@@ -204,16 +209,10 @@ class Project :
     def _getDependencies(self) -> Dependencies :
         """Return all the dependencies for this project."""
         return self._dependencies
-
-    def _setCache(self, cache:Cache) :
-        """
-        Overwrites the cache for this project.
-        """
-        self._cache:Cache = cache
-        cache.init(cacheName=self._getProjectName(), cacheRoot=self._getCacheRoot())
-        
+      
     def _getCache(self) :
         """Returns the cache."""
+        helpers.assertSet(_logger, "_getCache:::Cache has not been configured - use setCache to set the cache for this project", self._cache)
         return self._cache
     
     def _addDownloaded(self, alreadyDownloaded:list[str], dependency:Dependency) :

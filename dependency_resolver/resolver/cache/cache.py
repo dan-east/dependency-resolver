@@ -12,16 +12,14 @@ class Cache() :
     defaultDownloadName:str = "downloadedSource"
 
 
-    def __init__(self, cacheRoot:str = "") :
+    def __init__(self, cacheRoot:str, cacheName:str) :
         """
         Construct the cache.
             Parameters:
                 cacheRoot - the home/root directory of the cache. All downloaded sources will be added somewhere in this directory.
+                cacheName - the name of the cache. This is used to separate different caches from each other. If not specified, defaults to "default".
         """
-        # initialise the cache root and cache name, so they are defined.
-        self._cacheRoot:str = ""
-        self._cacheName:str = ""
-        self.init(cacheRoot=cacheRoot)
+        self.init(cacheRoot=cacheRoot, cacheName=cacheName)
 
 
     def clean(self) :
@@ -31,22 +29,24 @@ class Cache() :
             file_util.deleteContents(self._getCachePath())
         
 
-    def init(self, cacheName:str = "", cacheRoot:str = "") :
+    def init(self, cacheRoot:str, cacheName:str) :
         """
         Initializes the cache. 
         Must be called before it is used.
 
         Parameters:
-            cacheName - Can give this cache a specific name. All sources will be downloaded under this name, separating the from the rest of the cache. Optional.
-            cacheRoot - Set the root of the cache. Optional.
+            cacheRoot - Set the root of the cache.
+            cacheName - Can give this cache a specific name. All sources will be downloaded under this name, separating the from the rest of the cache.
         """
+        helpers.assertSet(_logger, "init:cacheRoot not set", cacheRoot)
+        helpers.assertSet(_logger, "init:cacheName not set", cacheName)
+        
         # If we have not been instantiated with a root then use the project's cache root, if specified.
-        if helpers.isEmpty(self._getCacheRoot()) :
-            self._setCacheRoot(cacheRoot)
-
+        self._setCacheRoot(cacheRoot)
         self._setCacheName(cacheName)
         
-        file_util.mkdir(self._getCachePath(), mode=0o755) # make sure the cache directory exists
+         # make sure the cache directory exists
+        file_util.mkdir(self._getCachePath(), mode=0o755)
 
 
     def fetchDependency(self, dependency:Dependency, alwaysFetch:bool = False) :
