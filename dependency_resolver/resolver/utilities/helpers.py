@@ -2,7 +2,6 @@ import logging
 from typing import Any, Optional
 from sys import exit
 
-_logger=logging.getLogger(__name__)
 
 def assertSet(logger:logging.Logger, message:str, variable:Any) :
     """

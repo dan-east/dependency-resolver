@@ -10,7 +10,7 @@ from ..dependencies.dependencies import Dependencies
 from ..dependencies.dependency import Dependency
 from ..cache.cache import Cache
 
-_logger = logging.getLogger(__name__)
+_logger:logging.Logger = logging.getLogger(__name__)
 
 class Project :
     def __init__(self, configuration: Configuration) :

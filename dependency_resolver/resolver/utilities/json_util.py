@@ -4,7 +4,7 @@ from typing import Any
 from . import file_util
 
 # Logging
-_logger = logging.getLogger(__name__) # module name
+_logger:logging.Logger = logging.getLogger(__name__) # module name
 
 def parseFromFile(path:str) -> Any :
     """

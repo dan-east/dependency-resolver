@@ -5,7 +5,7 @@ from ..sources.source import Source
 from ..configuration.attributes import ConfigAttributes
 
 # Logging
-_logger = logging.getLogger(__name__) # module name
+_logger:logging.Logger = logging.getLogger(__name__) # module name
 
 # Models each dependency, i.e this thing over here needs to go here.
 # An action may be defined to perform on the source file as part of resolving this dependency, for example unzip the source file.

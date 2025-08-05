@@ -1,8 +1,5 @@
-import logging
 from typing import Optional
 from .dependency import Dependency
-
-_logger = logging.getLogger(__name__)
 
 class Dependencies() :
     

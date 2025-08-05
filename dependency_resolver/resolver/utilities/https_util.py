@@ -2,7 +2,7 @@ import logging
 import requests
 from .errors_util import UtilityError
 
-_logger = logging.getLogger(__name__)
+_logger:logging.Logger = logging.getLogger(__name__)
 
 def download(source:str, target:str, chunks:int = 1024*1024*50) :
     """

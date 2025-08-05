@@ -1,7 +1,4 @@
-import logging
 from datetime import datetime, timedelta
-
-_logger = logging.getLogger(__name__) # module name
 
 def getCurrentDateTimeString(format:str = "%d/%m/%Y %H:%M:%S") :
     """

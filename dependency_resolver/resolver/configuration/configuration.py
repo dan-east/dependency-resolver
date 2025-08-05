@@ -3,7 +3,7 @@ from typing import Optional
 from .attributes import ConfigAttributes
 from ..utilities import helpers, json_util, file_util
 
-_logger = logging.getLogger(__name__)
+_logger:logging.Logger = logging.getLogger(__name__)
 
 class Configuration :
     def __init__(self, configurationPath:str) :

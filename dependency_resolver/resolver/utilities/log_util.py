@@ -4,7 +4,7 @@ import sys
 import os.path
 
 # Logging
-_logger = logging.getLogger(__name__) # module name
+_logger:logging.Logger = logging.getLogger(__name__) # module name
 
 
 # Call once to set up logging.

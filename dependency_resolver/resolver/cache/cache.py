@@ -3,7 +3,7 @@ from ..utilities import file_util, helpers
 from ..dependencies.dependency import Dependency
 from ..errors.errors import FetchError, ResolveError
 
-_logger = logging.getLogger(__name__)
+_logger:logging.Logger = logging.getLogger(__name__)
 
 class Cache() :
     # When we download something in the cache we have to give it a file name.

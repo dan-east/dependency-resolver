@@ -4,7 +4,7 @@ from tarfile import TarFile
 from . import file_util
 from .errors_util import UtilityError
 
-_logger = logging.getLogger(__name__)
+_logger:logging.Logger = logging.getLogger(__name__)
 
 def untar(tarPath:str, targetDir:str) :
     """

@@ -10,7 +10,7 @@ from ..dependencies.dependencies import Dependencies
 from ..dependencies.dependency import Dependency
 from ..dependencies.resolveAction import ResolveAction
 
-_logger = logging.getLogger(__name__)
+_logger:logging.Logger = logging.getLogger(__name__)
 
 class Creator :
     

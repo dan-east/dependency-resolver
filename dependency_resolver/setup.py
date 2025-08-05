@@ -8,7 +8,7 @@ from resolver.utilities import dependencies_util, log_util
 from collections.abc import Sequence
 
 
-_logger = logging.getLogger(__name__)
+_logger:logging.Logger = logging.getLogger(__name__)
 
 
 # Sets up the whole shebang

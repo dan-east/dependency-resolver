@@ -3,7 +3,7 @@ import subprocess
 from subprocess import CompletedProcess
 from typing import Any
 
-_logger = logging.getLogger(__name__) # module name
+_logger:logging.Logger = logging.getLogger(__name__) # module name
 
 
 def runExternal(command:str, verifySuccess:bool = True) -> str :

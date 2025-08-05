@@ -11,7 +11,7 @@ from .resolver.configuration.configuration import Configuration
 from .resolver.project.project import Project
 from .resolver.cache.cache import Cache
 
-_logger = logging.getLogger(__name__)
+_logger:logging.Logger = logging.getLogger(__name__)
 
 
 # Sets up the whole shebang

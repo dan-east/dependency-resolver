@@ -3,7 +3,7 @@ from sys import executable
 from typing import Any
 from . import run_util
 
-_logger = logging.getLogger(__name__)
+_logger:logging.Logger = logging.getLogger(__name__)
 
 def installPackages(packages:list[str]) :
     """

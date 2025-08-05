@@ -4,7 +4,7 @@ from ..utilities import helpers, file_util, zip_util, tar_util, errors_util
 from ..configuration.attributes import ConfigAttributes
 from ..errors.errors import ResolveError
 
-_logger = logging.getLogger(__name__)
+_logger:logging.Logger = logging.getLogger(__name__)
 
 class ResolveAction(Enum) :
     COPY = ConfigAttributes.RESOLVE_COPY 
@@ -66,11 +66,11 @@ class ResolveAction(Enum) :
     def _unzip(self, sourcePath:str, destinationDir:str) :
         try :
             zip_util.unzip(sourcePath, destinationDir)
-        except errors_util.ZipError as zipError :
+        except zip_util.ZipError as zipError :
             raise ResolveError(f"Failed to unzip {sourcePath} -> {destinationDir}") from zipError
 
     def _untar(self, sourcePath:str, destinationDir:str) :
         try :
             tar_util.untar(sourcePath, destinationDir)
-        except errors_util.TarError as tarError :
+        except tar_util.TarError as tarError :
             raise ResolveError(f"Failed to untar {sourcePath} -> {destinationDir}") from tarError
