@@ -67,8 +67,8 @@ def _printDependencyTargetPathCommand(args:argparse.Namespace) :
 
 # Update every dependencies source in the cache.
 def _updateSourceCache(subparsers) :
-    runner = subparsers.add_parser("update_cache", help="Download sources and cache them.")
-    runner.add_argument("--clean", action="store_true", help='Clean the cache and logs before downloading Sources. Essentially rebuilds the cache for the given configuration.', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    runner = subparsers.add_parser("update_cache", help="Download sources and cache them.", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    runner.add_argument("--clean", action="store_true", help='Clean the cache and logs before downloading Sources. Essentially rebuilds the cache for the given configuration.')
     runner.add_argument("--force", action="store_true", help='Force the update of any source for this project.')
     runner.add_argument("--configPath", "-c", help='The path to the configuration file', required=True)
     runner.add_argument("--cacheRoot", "-R", help='The root of the cache to use for the downloads.', default=constants.CACHE_DIR, required=False)
@@ -97,8 +97,8 @@ def _resolveFromCacheDependenciesCommand(args:argparse.Namespace) :
 
 # Update every dependencies source in the cache.
 def _resolveDependencies(subparsers) :
-    runner = subparsers.add_parser("resolve", help="Fetch and Resolve all dependencies.")
-    runner.add_argument("--clean", action="store_true", help='Clean the cache and logs before downloading Sources. Essentially rebuilds the cache for the given configuration.', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    runner = subparsers.add_parser("resolve", help="Fetch and Resolve all dependencies.", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    runner.add_argument("--clean", action="store_true", help='Clean the cache and logs before downloading Sources. Essentially rebuilds the cache for the given configuration.')
     runner.add_argument("--force", action="store_true", help='Always fetch of the source even if already previously fetched.')
     runner.add_argument("--configPath", "-c", help='The path to the configuration file', required=True)
     runner.add_argument("--cacheRoot", "-R", help='The root of the cache to use for the downloads.', default=constants.CACHE_DIR, required=False)
