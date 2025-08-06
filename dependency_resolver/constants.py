@@ -1,4 +1,9 @@
 import os
+import dotenv
+
+# Load environment variables from .env file
+dotenv.load_dotenv()
+
 
 # Defines where the home directory is - can be overridden
 HOME_DIR:str = os.getenv("RESOLVER_HOME", os.getcwd())
