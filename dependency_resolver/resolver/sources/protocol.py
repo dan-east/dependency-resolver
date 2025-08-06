@@ -2,7 +2,7 @@ import logging
 from enum import Enum
 from ..errors.errors import FetchError
 from ..configuration.attributes import ConfigAttributes
-from ..utilities import helpers, file_util, https_util, errors_util
+from ..utilities import helpers, file_util, https_util
 
 
 _logger = logging.getLogger(__name__)  # module name
@@ -40,7 +40,7 @@ class SourceProtocol(Enum) :
                 return SourceProtocol.FILESYSTEM
             case _ :
                 _logger.debug(f"Cannot determine SourceProtocol for {type}. Assuming SourceProtocol.HTTPS.")
-                return SourceProtocol.HTTPS # if its unknown then lets assume https
+                return SourceProtocol.HTTPS  # if its unknown then lets assume https
 
 
     def fetch(self, source:str, destinationDir:str, destinationName:str) :
@@ -55,19 +55,19 @@ class SourceProtocol(Enum) :
         Raises:
             FetchError if fetch fails.
         """
-        helpers.assertSet(_logger, f"Cannot fetch - the source path was not specified.", source)
-        helpers.assertSet(_logger, f"Cannot fetch - the destination directory was not specified.", destinationDir)
-        helpers.assertSet(_logger, f"Cannot fetch - the destination file was not specified.", destinationName)
+        helpers.assertSet(_logger, "Cannot fetch - the source path was not specified.", source)
+        helpers.assertSet(_logger, "Cannot fetch - the destination directory was not specified.", destinationDir)
+        helpers.assertSet(_logger, "Cannot fetch - the destination file was not specified.", destinationName)
 
-        file_util.mkdir(destinationDir, mode=0o744) # Try to make the target destination
-        if file_util.ensurePathExists(destinationDir) and file_util.isDir(destinationDir) : # make sure all is ok with the destination.
+        file_util.mkdir(destinationDir, mode=0o744)  # Try to make the target destination
+        if file_util.ensurePathExists(destinationDir) and file_util.isDir(destinationDir) :  # make sure all is ok with the destination.
             destination:str = file_util.buildPath(destinationDir, destinationName)
             match self :
                 case SourceProtocol.HTTPS :
                     self._fetchHttps(source, destination)
                 case SourceProtocol.FILESYSTEM:
                     self._fetchFileSystem(source, destination)
-        else :      
+        else :
             raise FetchError(f"Unable to fetch {source}, as the specified destination ({destinationDir}) exists but is not a directory")
 
 
@@ -94,7 +94,7 @@ class SourceProtocol(Enum) :
             source - the absolute location of the source file
             destination - the absolute path to put this file. Must include destination file name.
 
-        Throws: 
+        Throws:
             FetchError if copy fails.
         """
         try :

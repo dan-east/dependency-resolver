@@ -2,7 +2,7 @@ from typing import Optional
 from .dependency import Dependency
 
 class Dependencies() :
-    
+
     def __init__(self) :
         self._dependencies:list[Dependency] = []
 

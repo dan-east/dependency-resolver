@@ -23,8 +23,8 @@ def parseFromFile(path:str) -> Any :
                 _logger.debug(f"Opening JSON file at {path}")
                 return json.load(fp=openFile)
         else :
-            _logger.error(f"Cannot open non-existent file at {path}")            
-    except json.JSONDecodeError as e :    
+            _logger.error(f"Cannot open non-existent file at {path}")
+    except json.JSONDecodeError as e :
         _logger.error(f"Unable to decode JSON in file at {path} : {e}")
 
     return None

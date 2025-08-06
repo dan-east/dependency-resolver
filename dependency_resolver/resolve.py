@@ -46,7 +46,7 @@ def _printCommand(args:argparse.Namespace) :
 
 
 # Validate (check for missing required attributes) the configuration at the specified path.
-def _validateConfig(subparsers) : 
+def _validateConfig(subparsers) :
     runner = subparsers.add_parser("validate_config", help="Validate (find any missing required attributes) in the target JSON configuration.", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     runner.add_argument("--configPath", "-c", help='The path to the configuration file', required=True)
     runner.set_defaults(func=_validateCommand)

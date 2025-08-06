@@ -32,7 +32,7 @@ class Cache() :
 
     def init(self, cacheRoot:str, cacheName:str) :
         """
-        Initializes the cache. 
+        Initializes the cache.
         Must be called before it is used.
 
         Parameters:
@@ -46,14 +46,14 @@ class Cache() :
         self._setCacheName(cacheName)
         self._setCachePath(cacheRoot=cacheRoot, cacheName=cacheName)
 
-         # make sure the cache directory exists
+        # make sure the cache directory exists
         file_util.mkdir(self._getCachePath(), mode=0o755)
 
 
     def fetchDependency(self, dependency:Dependency, alwaysFetch:bool = False) :
         """
         Fetches a dependency's source into the cache.
-        
+
         Parameters:
             dependency - the dependency to fetch.
             alwaysFetch - will always fetch the dependency's source, even if it is already in the cache.
@@ -84,7 +84,7 @@ class Cache() :
     def resolveDependency(self, dependency:Dependency, targetHomeDir:str, onlyMissing:bool = False) :
         """
         Resolves a dependency by performing its Resolve action from the fetched source in the cache into the target location.
-        
+
         Parameters:
             dependency - the dependency to resolve.
             targetHome - Each dependency is relative the configuration that defines it. This is the path to that directory.
@@ -109,7 +109,7 @@ class Cache() :
         Returns:
             str: the path to the cache directory for the dependency's source.
         """
-        # cache location is based on the source name and the source path   
+        # cache location is based on the source name and the source path
         return file_util.buildPath(self._getCachePath(), dependency.getSource().getName(), dependency.getSourcePath())
 
 
@@ -125,10 +125,10 @@ class Cache() :
             str: the name of the file in the cache that the dependency's source will be downloaded to.
         """
         cacheName:str = dependency.getTargetName()
-        if not cacheName and dependency.getSourcePath() : # use the end of the source path if specified.
+        if not cacheName and dependency.getSourcePath() :  # use the end of the source path if specified.
             cacheName = file_util.returnLastPartOfPath(dependency.getSourcePath())
-        if not cacheName : # just use a default name
-            cacheName = self.defaultDownloadName 
+        if not cacheName :  # just use a default name
+            cacheName = self.defaultDownloadName
         return cacheName
 
 
@@ -179,7 +179,7 @@ class Cache() :
             cacheName (str): the name of the cache. If not specified, defaults to "default".
         """
         self._cacheName:str = cacheName
-    
+
 
     def _getCacheName(self) -> str :
         """
@@ -224,6 +224,6 @@ class Cache() :
             dependency (Dependency): the dependency to check.
 
         Returns:
-            bool: True if the dependency's source is already cached, False otherwise. 
+            bool: True if the dependency's source is already cached, False otherwise.
         """
         return file_util.exists(self._generateCacheDownloadPath(dependency))

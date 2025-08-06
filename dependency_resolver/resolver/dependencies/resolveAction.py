@@ -8,7 +8,7 @@ _logger:logging.Logger = logging.getLogger(__name__)
 
 
 class ResolveAction(Enum) :
-    COPY = ConfigAttributes.RESOLVE_COPY 
+    COPY = ConfigAttributes.RESOLVE_COPY
     UNZIP = ConfigAttributes.RESOLVE_UNZIP
     UNTAR = ConfigAttributes.RESOLVE_UNTAR
 
@@ -28,7 +28,7 @@ class ResolveAction(Enum) :
         """
         if helpers.isEmpty(type) :
             return ResolveAction.COPY
-        
+
         match type.lower() :
             case ConfigAttributes.RESOLVE_COPY :
                 return ResolveAction.COPY
@@ -51,8 +51,8 @@ class ResolveAction(Enum) :
         Raises:
             ResolveError if fails to resolve the action.
         """
-        helpers.assertSet(_logger, f"Cannot fetch - the source path was not specified.", sourcePath)
-        helpers.assertSet(_logger, f"Cannot fetch - the destination directory was not specified.", destinationDir)
+        helpers.assertSet(_logger, "Cannot fetch - the source path was not specified.", sourcePath)
+        helpers.assertSet(_logger, "Cannot fetch - the destination directory was not specified.", destinationDir)
         match self :
             case ResolveAction.COPY :
                 self._copy(sourcePath, destinationDir)

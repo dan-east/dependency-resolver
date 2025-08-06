@@ -17,7 +17,7 @@ def runExternal(command:str, verifySuccess:bool = True) -> str :
 
     Returns:
         str: The standard output of the command.
-        
+
     Raises:
         subprocess.CalledProcessError: If the command fails (returns a non-zero exit code) and verifySuccess is True.
     """
@@ -31,7 +31,7 @@ def runExternal(command:str, verifySuccess:bool = True) -> str :
             _logger.debug(f"stderr: {result.stderr}")
 
     if verifySuccess :
-        result.check_returncode() # checks the return code and exits if failure indicated.
+        result.check_returncode()  # checks the return code and exits if failure indicated.
 
     return result.stdout
 
@@ -46,7 +46,7 @@ def runExternalArgs(parameters:list[Any], verifySuccess:bool = True) -> str :
 
     Returns:
         str: The standard output of the command.
-        
+
     Raises:
         subprocess.CalledProcessError: If the command fails (returns a non-zero exit code) and verifySuccess is True.
     """
@@ -59,6 +59,6 @@ def runExternalArgs(parameters:list[Any], verifySuccess:bool = True) -> str :
             _logger.debug(f"stderr: {result.stderr}")
 
     if verifySuccess :
-        result.check_returncode() # checks the return code and exits if failure indicated.
+        result.check_returncode()  # checks the return code and exits if failure indicated.
 
     return result.stdout

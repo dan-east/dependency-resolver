@@ -22,7 +22,7 @@ def untar(tarPath:str, targetDir:str) :
     _logger.debug(f"Untarring {tarPath} -> {targetDir}")
     _validateTarPath(tarPath)
     _validateTargetDirectory(targetDir)
-    file_util.mkdir(targetDir, mode=0o744) # make target directory in case it doesn't exist.
+    file_util.mkdir(targetDir, mode=0o744)  # make target directory in case it doesn't exist.
     try :
         with _createTarFile(tarPath) as tar :
             tar.extractall(targetDir)
@@ -85,7 +85,7 @@ def _validateTargetDirectory(targetDir:str) :
     if targetDir :
         if file_util.exists(targetDir) and not file_util.isDir(targetDir) :
             _logger.error(f"The target directory {targetDir} is actually a file (at least its not a directory).")
-            raise TarError(f"The target directory {targetDir} already exists but is a file.")    
+            raise TarError(f"The target directory {targetDir} already exists but is a file.")
     else :
         _logger.error("The target directory has not been specified.")
         raise TarError("The target directory has not been specified.")

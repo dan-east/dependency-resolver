@@ -2,7 +2,7 @@ from enum import Enum
 from ..utilities import helpers
 
 
-# Is the source path relative to something or an absolute path? 
+# Is the source path relative to something or an absolute path?
 # The default for a source is ABSOLUTE.
 class SourceType(Enum) :
     ABSOLUTE = 1

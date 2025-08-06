@@ -13,7 +13,7 @@ from ..dependencies.resolveAction import ResolveAction
 _logger:logging.Logger = logging.getLogger(__name__)
 
 class Creator :
-    
+
     def __init__(self, configuration:Configuration) :
         helpers.assertSet(_logger, "Configuration is not set", configuration)
         self._config:Configuration = configuration
@@ -75,7 +75,7 @@ class Creator :
         if dependencyConfig is not None :
             for dependency in dependencyConfig :
                 dependencies.addDependency(self._createDependency(dependency, sources))
-        
+
         return dependencies
 
 

@@ -1,4 +1,4 @@
-from ..utilities.errors_util import ProjectError 
+from ..utilities.errors_util import ProjectError
 
 class ProtocolError(ProjectError) :
     """Wraps underlying exceptions to make handling them easier for calling code."""

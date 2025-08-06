@@ -1,7 +1,7 @@
 import logging
 from typing import Optional
 from .protocol import SourceProtocol
-from .type  import SourceType
+from .type import SourceType
 from ..configuration.attributes import ConfigAttributes
 from ..utilities import file_util, helpers
 
@@ -11,7 +11,7 @@ _logger = logging.getLogger(__name__)
 
 class Source :
 
-    def __init__(self, name:str, protocol:SourceProtocol, type:Optional[SourceType] = None,  base:Optional[str] = None, description:Optional[str] = None):
+    def __init__(self, name:str, protocol:SourceProtocol, type:Optional[SourceType] = None, base:Optional[str] = None, description:Optional[str] = None):
         """
         Parameters:
             name - The unique name given to this source.
@@ -44,7 +44,7 @@ class Source :
         """
         fullPath:str = self.getAbsoluteSourcePath(sourcePath)
         _logger.debug(f"Fetching {fullPath} -> {targetDir}/{targetName}.")
-        self._getProtocol().fetch(fullPath, targetDir, targetName) 
+        self._getProtocol().fetch(fullPath, targetDir, targetName)
 
 
     def getAbsoluteSourcePath(self, sourcePath:Optional[str]) -> str :
@@ -55,8 +55,8 @@ class Source :
             sourcePath - any additional path, relative to the source base. Optional.
         """
         if helpers.hasValue(sourcePath) :
-             # construct the full path/URI to the source
-            return file_util.buildPath(self._getBase(), sourcePath) # type: ignore - helpers.hasValue checks for None
+            # construct the full path/URI to the source
+            return file_util.buildPath(self._getBase(), sourcePath)  # type: ignore - helpers.hasValue checks for None
         else :
             return self._getBase()
 
@@ -122,4 +122,3 @@ class Source :
             SourceType: The type of this source.
         """
         return self._type
-

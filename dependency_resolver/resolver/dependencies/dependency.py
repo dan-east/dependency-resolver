@@ -6,7 +6,7 @@ from ..configuration.attributes import ConfigAttributes
 
 _logger:logging.Logger = logging.getLogger(__name__)  # module name
 
-# Models each dependency, i.e that thing needs to go here.
+# Models each dependency, i.e that thing needs to go here.
 # An action may be defined to perform on the source file as part of resolving this dependency, for example unzip the source file.
 class Dependency :
 
@@ -28,7 +28,7 @@ class Dependency :
         self._name:str = name
         self._targetDir:str = targetDir
         self._targetName:str = targetName
-        self._targetRelativeRoot:bool = targetRelativeRoot    
+        self._targetRelativeRoot:bool = targetRelativeRoot
         self._source:Source = source
         self._sourcePath:str = sourcePath
         self._resolveAction:ResolveAction = resolveAction
@@ -117,10 +117,10 @@ class Dependency :
             ResolveError if this fails to resolve successfully.
         """
         helpers.assertSet(_logger, f"Cannot resolve the dependency {self.getName()} - the source path wasn't set", sourcePath)
-        helpers.assertSet(_logger, f"Cannot resolve the dependency {self.getName()} - the destination directory path wasn't set", targetHomeDir)        
+        helpers.assertSet(_logger, f"Cannot resolve the dependency {self.getName()} - the destination directory path wasn't set", targetHomeDir)
         targetDir:str = file_util.buildPath(targetHomeDir, self.getTargetDirectory())
         file_util.mkdir(targetDir, mode=0o744)  # just in case
-        self._getResolveAction().resolve(sourcePath, targetDir) 
+        self._getResolveAction().resolve(sourcePath, targetDir)
 
 
     def _getResolveAction(self) -> ResolveAction :

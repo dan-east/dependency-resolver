@@ -26,10 +26,10 @@ def setupRootLogging(logToFile:str):
     stdout_handler.setFormatter(formatter)
     root.addHandler(stdout_handler)
 
-    print(f"Setting up root logging to {logToFile}")    
+    print(f"Setting up root logging to {logToFile}")
     os.makedirs(os.path.dirname(logToFile), 0o755, True)  # make sure the parent directory exists
-        
-    file_handler = logging.handlers.RotatingFileHandler(logToFile, "a", 10*1024*1024, 3)
+
+    file_handler = logging.handlers.RotatingFileHandler(logToFile, "a", 10 * 1024 * 1024, 3)
     file_handler.setLevel(logging.DEBUG)
     file_handler.setFormatter(formatter)
     root.addHandler(file_handler)

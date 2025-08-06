@@ -7,7 +7,7 @@ _logger:logging.Logger = logging.getLogger(__name__)
 
 class Configuration :
     def __init__(self, configurationPath:str) :
-        helpers.assertSet(_logger, f"Please specify path to configuration JSON file", configurationPath)
+        helpers.assertSet(_logger, "Please specify path to configuration JSON file", configurationPath)
         self._configPath:str = configurationPath
         self._loadConfiguration()
 
@@ -18,7 +18,7 @@ class Configuration :
         """
         if file_util.isFile(self._getConfigurationPath()) :
             self._config:dict = json_util.parseFromFile(self._getConfigurationPath())
-            helpers.assertSet(_logger, f"Unable to load the JSON representation in the path {self._getConfigurationPath()}", self.getConfiguration()) # make sure we managed to open the configuration
+            helpers.assertSet(_logger, f"Unable to load the JSON representation in the path {self._getConfigurationPath()}", self.getConfiguration())  # make sure we managed to open the configuration
             _logger.debug(f"Loaded configuration: {self.getConfiguration()}")
         else :
             _logger.debug(f"Cannot load configuration - file doesn't exist at {self._getConfigurationPath()}")
@@ -74,7 +74,7 @@ class Configuration :
                 count += 1
                 print(f"  {count} -> {error}")
         else :
-            print(f"Valid: the configuration at {self._getConfigurationPath()} doesn't contain any errors.")              
+            print(f"Valid: the configuration at {self._getConfigurationPath()} doesn't contain any errors.")
 
 
     def numberOfErrors(self) -> int :
@@ -112,7 +112,7 @@ class Configuration :
         """
         helpers.addIfNotNone(errors, self._doesKeyExist(config, ConfigAttributes.PROJECT_NAME, False))
 
-        
+
     def _validateSources(self, config:dict, errors:list[str]) :
         """
         Validates the sources in the configuration.
@@ -122,7 +122,7 @@ class Configuration :
             errors (list[str]): a list to append any error messages to.
         """
         key:str = ConfigAttributes.SOURCES
-        error:str|None = self._doesKeyExist(config, key, False)
+        error:Optional[str] = self._doesKeyExist(config, key, False)
         if error :
             errors.append(error)
         else :
@@ -152,7 +152,7 @@ class Configuration :
             errors (list[str]): a list to append any error messages to.
         """
         key:str = ConfigAttributes.DEPENDENCIES
-        error:str|None = self._doesKeyExist(config, key, False)
+        error:Optional[str] = self._doesKeyExist(config, key, False)
         if error :
             errors.append(error)
         else :
@@ -190,5 +190,5 @@ class Configuration :
         if key not in config or not config[key] :
             error:str = f"Required attribute {key} is not specified or is empty."
             if add_context :
-                error=f"{error} In: {config}."
+                error = f"{error} In: {config}."
             return error

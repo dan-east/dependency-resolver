@@ -23,7 +23,7 @@ def mkdir(dir:str, parents:bool = True, exist_ok:bool = True, mode:int = 511, us
     """
     if helpers.hasValue(dir) :
         Path(dir).mkdir(mode=mode, parents=parents, exist_ok=exist_ok)
-        
+
         if user is not None and group is not None :
             chown(dir, user, group)
     else :
@@ -101,10 +101,10 @@ def buildPath(*paths:str) -> str:
     """
     result:str = ""
     for path in paths :
-        if helpers.hasValue(path) : 
+        if helpers.hasValue(path) :
             if result :
                 # Remove leading separator from path, as a leading separator causes the thing you are joining to (result in this case) to be discarded.
-                result = os.path.join(result, path.lstrip(os.path.sep)) 
+                result = os.path.join(result, path.lstrip(os.path.sep))
             else :
                 result = f"{path}"
 
@@ -147,7 +147,7 @@ def getUserDirectory() -> str :
     return str(Path.home().absolute().resolve())
 
 
-def copy(source:str, dest:str, sourceDirectoryContentsOnly:Optional[bool]=False) -> bool :
+def copy(source:str, dest:str, sourceDirectoryContentsOnly:Optional[bool] = False) -> bool :
     """
     Copy files or directories.
 
@@ -173,7 +173,7 @@ def copy(source:str, dest:str, sourceDirectoryContentsOnly:Optional[bool]=False)
         else :
             _logger.error(f"Can't copy - {source} does not exist")
             return False
-    except Exception as exc :
+    except Exception :
         _logger.error(f"Failed to copy {source} -> {dest}", exc_info=True)
         return False
 
@@ -193,7 +193,7 @@ def copyContents(dir:str, dest:str) -> bool:
         if os.path.exists(dir) and os.path.isdir(dir) :
             _logger.error("Copying contents of %s -> %s", dir, dest)
             for name in os.listdir(dir):
-                copy(os.path.join(dir, name), dest, False) # copy files and complete directories
+                copy(os.path.join(dir, name), dest, False)  # copy files and complete directories
             return True
         else :
             _logger.error("Cannot copy contents of %s as it does not exist", dir)
@@ -370,7 +370,7 @@ def howOldIsFile(path:str) -> Optional[time_util.timedelta] :
         age = time_util.howOld(os.path.getmtime(path))
     else :
         _logger.warning(f"Path: {path} does not exist, cannot determine age.")
-    
+
     return age
 
 
@@ -401,7 +401,7 @@ def readFile(path:str, encoding:str = "utf-8") -> str :
 
     Returns:
         str: The contents of the file, or "" if the file does not exist.
-        
+
     Raises:
         FileError: If the file cannot be read.
     """
@@ -423,12 +423,12 @@ def readListFromFile(path: str, encoding:str = "utf-8") -> list[str]:
 
     Returns:
         list[str]: List of patterns (stripped, non-empty, non-comment lines).
-        
+
     Raises:
         FileError: If the file cannot be read.
     """
     listFromFile: list[str] = []
-    
+
     try :
         with open(path, 'r', encoding=encoding) as file:
             for line in file:
@@ -448,7 +448,7 @@ def removeFilesOfTypes(dir:str, types:list[str]) :
     Args:
         dir (str): The directory to inspect.
         types (list[str]): The types of files to remove.
-        
+
     Raises:
         errors_util.FileError: If a file cannot be deleted.
     """
@@ -461,10 +461,10 @@ def removeFilesOfTypes(dir:str, types:list[str]) :
                 try :
                     _logger.debug(f"Removing {path}")
                     delete(path)
-                    _logger.debug(f"Removed {path}")   
+                    _logger.debug(f"Removed {path}")
                 except Exception as e :
                     raise FileError(f"Failed to remove file {path}: {e}")
-                
+
     _logger.debug(f"Removed files of types {types} from {dir}")
 
 

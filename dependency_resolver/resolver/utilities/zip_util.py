@@ -17,11 +17,11 @@ def zip(sourceDir:str, zipDir:str, zipName:str) -> str :
         sourceDir (str): The directory to zip.
         zipDir (str): The directory to place the zip file in.
         zipName (str): The name of the zip file.
-        
+
     Returns:
         str: The path to the zip file.
 
-    Raises:    
+    Raises:
         ZipError: If an error is encountered.
     """
     _logger.debug(f"Zipping {sourceDir} -> {zipDir}/{zipName}")
@@ -31,10 +31,10 @@ def zip(sourceDir:str, zipDir:str, zipName:str) -> str :
     _validateTargetDirectory(zipDir)
 
     # Create the path to the zip file
-    zip_path:str = f"{zipDir}/{zipName}"  
+    zip_path:str = f"{zipDir}/{zipName}"
 
     # delete the zip file if it already exists
-    file_util.delete(zip_path) 
+    file_util.delete(zip_path)
 
     # Convert to Path object
     dir:Path = Path(sourceDir)
@@ -49,7 +49,7 @@ def zip(sourceDir:str, zipDir:str, zipName:str) -> str :
         raise ZipError(f"Unable to zip {sourceDir} -> {zip_path}") from exc
 
     _logger.debug(f"Zipped {sourceDir} -> {zip_path}")
-    
+
     # Return the path to the zip file
     return zip_path
 
@@ -72,7 +72,7 @@ def unzip(zipPath:str, targetDir:str) :
     _validateTargetDirectory(targetDir)
 
     # Make the target directory in case it doesn't exist.
-    file_util.mkdir(targetDir, mode=0o744) # make target directory in case it doesn't exist.
+    file_util.mkdir(targetDir, mode=0o744)  # make target directory in case it doesn't exist.
     try :
         with _createZipFileForRead(zipPath) as zip :
             zip.extractall(targetDir)
