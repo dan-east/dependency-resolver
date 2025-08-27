@@ -22,7 +22,7 @@ class Configuration :
             _logger.debug(f"Loaded configuration: {self.getConfiguration()}")
         else :
             _logger.debug(f"Cannot load configuration - file doesn't exist at {self._getConfigurationPath()}")
-            exit(1)  # a terminal condition.
+            exit(1)
 
 
     def _getConfigurationPath(self) -> str :
