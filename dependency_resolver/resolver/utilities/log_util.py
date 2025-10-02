@@ -17,7 +17,7 @@ def setupRootLogging(logToFile:str):
         logToFile (str): The path to the log file where debug messages will be written.
     """
     root = logging.getLogger(None)
-    root.setLevel(logging.DEBUG)
+    root.setLevel(logging.INFO)
 
     formatter = logging.Formatter('%(asctime)s : %(levelname)s : %(module)s.%(funcName)s(%(lineno)d) >> %(message)s')
 
@@ -26,7 +26,7 @@ def setupRootLogging(logToFile:str):
     stdout_handler.setFormatter(formatter)
     root.addHandler(stdout_handler)
 
-    print(f"Setting up root logging to {logToFile}")
+    _logger.debug(f"Setting up root logging to {logToFile}")
     os.makedirs(os.path.dirname(logToFile), 0o755, True)  # make sure the parent directory exists
 
     file_handler = logging.handlers.RotatingFileHandler(logToFile, "a", 10 * 1024 * 1024, 3)
